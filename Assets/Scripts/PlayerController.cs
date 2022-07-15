@@ -55,27 +55,31 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         #region Vertical/Horizontal Movement:
-        if (canMove)
-        {
-            float horizontalMovement = Input.GetAxisRaw(horizontalAxis);
-            float verticalMovement = Input.GetAxisRaw(verticalAxis);
+        float horizontalMovement = Input.GetAxisRaw(horizontalAxis);
+        float verticalMovement = Input.GetAxisRaw(verticalAxis);
 
+        if (canMove)
             RB.velocity = new Vector3(horizontalMovement, verticalMovement, 0) * moveSpeed;
 
-            animator.SetFloat("moveX", RB.velocity.x);
-            animator.SetFloat("moveY", RB.velocity.y);
+        else
+            RB.velocity = Vector2.zero;
 
+        animator.SetFloat("moveX", RB.velocity.x);
+        animator.SetFloat("moveY", RB.velocity.y);
+
+        if (canMove)
+        {
             if (horizontalMovement == 1 || horizontalMovement == -1 || verticalMovement == 1 || verticalMovement == -1)
             {
                 animator.SetFloat("lastMoveX", horizontalMovement);
                 animator.SetFloat("lastMoveY", verticalMovement);
-            }
-
-            // keeping the player within the same bounds as the camera:
-            transform.position = new Vector3(x: Mathf.Clamp(transform.position.x, playerBoundsBox.bounds.min.x + .5f, playerBoundsBox.bounds.max.x - .5f),
-                                             y: Mathf.Clamp(transform.position.y, playerBoundsBox.bounds.min.y, playerBoundsBox.bounds.max.y - 2),
-                                             z: transform.position.z);  
+            } 
         }
+
+        // keeping the player within the same bounds as the camera:
+        transform.position = new Vector3(x: Mathf.Clamp(transform.position.x, playerBoundsBox.bounds.min.x + .5f, playerBoundsBox.bounds.max.x - .5f),
+                                         y: Mathf.Clamp(transform.position.y, playerBoundsBox.bounds.min.y, playerBoundsBox.bounds.max.y - 2),
+                                         z: transform.position.z);
         #endregion
     }
 
