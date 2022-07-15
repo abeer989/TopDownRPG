@@ -9,7 +9,10 @@ public class AreaEntrance : MonoBehaviour
         if (!string.IsNullOrEmpty(PlayerController.instance.LastExitUsed))
         {
             if (PlayerController.instance.LastExitUsed == correspondingExitName)
+            {
+                UIController.instance.FadeFromBlack();
                 PlayerController.instance.transform.position = transform.position; 
+            }
         }
     }
 
