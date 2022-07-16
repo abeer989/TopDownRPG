@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 95493178617971409}
   - component: {fileID: 95493178617971422}
-  - component: {fileID: 8281475177563775472}
   - component: {fileID: 95493178617971410}
   - component: {fileID: 95493178617971408}
   - component: {fileID: 95493178617971423}
@@ -52,35 +51,6 @@ MonoBehaviour:
   RB: {fileID: 95493178617971423}
   animator: {fileID: 95493178617971421}
   moveSpeed: 5
---- !u!114 &8281475177563775472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 95493178617971411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a49674b01eeabc498762a72cb0fba4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterName: 
-  characterLevel: 0
-  currentEXP: 0
-  expToNextLevel: 
-  maxLevel: 100
-  baseEXP: 1000
-  HP: 0
-  maxHP: 100
-  MP: 0
-  maxMP: 30
-  strength: 0
-  defence: 0
-  weaponPower: 0
-  armorPower: 0
-  eqippedWeapon: 
-  eqippedArmor: 
-  playerSprite: {fileID: 0}
 --- !u!212 &95493178617971410
 SpriteRenderer:
   m_ObjectHideFlags: 0

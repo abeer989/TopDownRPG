@@ -4,6 +4,7 @@ public class EssentialsLoader : MonoBehaviour
 {
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject UICanvasPrefab;
+    [SerializeField] GameObject gameManagerPrefab;
 
     private void Awake()
     {
@@ -14,5 +15,8 @@ public class EssentialsLoader : MonoBehaviour
 
         if (UIController.instance == null)
             UIController.instance = Instantiate(UICanvasPrefab).GetComponent<UIController>();
+
+        if (GameManager.instance == null)
+            GameManager.instance = Instantiate(gameManagerPrefab).GetComponent<GameManager>();
     }
 }
