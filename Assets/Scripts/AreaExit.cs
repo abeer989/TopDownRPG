@@ -24,7 +24,7 @@ public class AreaExit : MonoBehaviour
         if (other.CompareTag(playerTag))
         {
             PlayerController.instance.LastExitUsed = exitName;
-            player.CanMove = false;
+            GameManager.instance.switchingScenes = true;
             player.Animator.enabled = false;
             StartCoroutine(ExitCR());
         }
@@ -36,7 +36,7 @@ public class AreaExit : MonoBehaviour
         yield return new WaitForSeconds(fadeInterval);
         SceneManager.LoadScene(sceneBuildIndex: sceneToLoadIndex);
         UIController.instance.FadeFromBlack();
-        player.CanMove = true;
         player.Animator.enabled = true;
+        GameManager.instance.switchingScenes = false;
     }
 }

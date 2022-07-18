@@ -30,7 +30,7 @@ public class DialogManager : MonoBehaviour
         if (dialogBox.activeInHierarchy)
         {
             // locking player movement while the dialog box is active:
-            PlayerController.instance.CanMove = false;
+            GameManager.instance.dialogActive = true;
             PlayerController.instance.Animator.enabled = false;
 
             if (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.E) || Input.GetMouseButtonUp(0))
@@ -45,7 +45,7 @@ public class DialogManager : MonoBehaviour
                 else
                 {
                     dialogBox.SetActive(false);
-                    PlayerController.instance.CanMove = true;
+                    GameManager.instance.dialogActive = false;
                     PlayerController.instance.Animator.enabled = true;
                     currentLineIndex = 0;
                 }

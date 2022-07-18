@@ -57,11 +57,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: Pixelnauts SDF
+  m_Name: Pixelnauts SDF - Outline
   m_EditorClassIdentifier: 
-  hashCode: 47119588
+  hashCode: -163417175
   material: {fileID: 7835838645218166640}
-  materialHashCode: 717185988
+  materialHashCode: -296146455
   m_Version: 1.1.0
   m_SourceFontFileGUID: 416767b5bbdb3e24e8f385bece614050
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 416767b5bbdb3e24e8f385bece614050, type: 3}
@@ -2231,7 +2231,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Pixelnauts Atlas Material
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - UNDERLAY_ON
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -2294,7 +2295,7 @@ Material:
     - _Reflectivity: 10
     - _ScaleRatioA: 0.9
     - _ScaleRatioB: 0.73125
-    - _ScaleRatioC: 0.73125
+    - _ScaleRatioC: 0.4875
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -2307,10 +2308,10 @@ Material:
     - _StencilWriteMask: 255
     - _TextureHeight: 1024
     - _TextureWidth: 1024
-    - _UnderlayDilate: -1
+    - _UnderlayDilate: 1
     - _UnderlayOffsetX: 0
     - _UnderlayOffsetY: 0
-    - _UnderlaySoftness: 0
+    - _UnderlaySoftness: 0.5
     - _VertexOffsetX: 0
     - _VertexOffsetY: 0
     - _WeightBold: 0.75

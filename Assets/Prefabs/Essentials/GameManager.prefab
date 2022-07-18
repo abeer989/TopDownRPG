@@ -56,11 +56,133 @@ MonoBehaviour:
   maxMP: 30
   strength: 15
   defence: 10
+  weaponPower: 10
+  armorPower: 10
+  equippedWeapon: 
+  equippedArmor: 
+  playerSprite: {fileID: 506618871, guid: c1db4699ec9128f41af18ab04aae681e, type: 3}
+--- !u!1 &5241321953728332639
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5182373004487483238}
+  - component: {fileID: 7299125677198091820}
+  m_Layer: 0
+  m_Name: Player 2 Stats
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5182373004487483238
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5241321953728332639}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 182548356597634215}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7299125677198091820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5241321953728332639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a49674b01eeabc498762a72cb0fba4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterName: Tim
+  characterLevel: 2
+  currentEXP: 0
+  maxLevel: 100
+  baseEXP: 1000
+  EXPLevelThresholds: 
+  currentHP: 0
+  maxHP: 100
+  currentMP: 0
+  maxMP: 30
+  strength: 15
+  defence: 10
   weaponPower: 0
   armorPower: 0
   equippedWeapon: 
   equippedArmor: 
-  playerSprite: {fileID: 506618871, guid: c1db4699ec9128f41af18ab04aae681e, type: 3}
+  playerSprite: {fileID: 21300000, guid: e0ddba6d3fcf21f49949fcc95c849aac, type: 3}
+--- !u!1 &6865573195252573209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2314628697062660677}
+  - component: {fileID: 4551098147113405878}
+  m_Layer: 0
+  m_Name: Player 3 Stats
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2314628697062660677
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6865573195252573209}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 182548356597634215}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4551098147113405878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6865573195252573209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a49674b01eeabc498762a72cb0fba4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterName: Ruby
+  characterLevel: 4
+  currentEXP: 0
+  maxLevel: 100
+  baseEXP: 1000
+  EXPLevelThresholds: 
+  currentHP: 0
+  maxHP: 100
+  currentMP: 0
+  maxMP: 30
+  strength: 15
+  defence: 10
+  weaponPower: 0
+  armorPower: 0
+  equippedWeapon: 
+  equippedArmor: 
+  playerSprite: {fileID: -308748595, guid: fb8cc55af4b7a034584793949fd90500, type: 3}
 --- !u!1 &6917454584478748606
 GameObject:
   m_ObjectHideFlags: 0
@@ -91,6 +213,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1628051947}
+  - {fileID: 5182373004487483238}
+  - {fileID: 2314628697062660677}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -108,3 +232,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerStatsList:
   - {fileID: 1628051948}
+  - {fileID: 7299125677198091820}
+  - {fileID: 4551098147113405878}
+  gameMenuOpen: 0
+  switchingScenes: 0
+  dialogActive: 0
