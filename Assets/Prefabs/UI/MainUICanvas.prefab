@@ -2770,7 +2770,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &969730196
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2873,19 +2873,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 969730198}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5625967765118759035}
-        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
-        m_MethodName: ToggleWindow
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &1056035345
 GameObject:
   m_ObjectHideFlags: 0
@@ -5526,7 +5514,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1855442531
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5629,19 +5617,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1855442533}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5625967765118759035}
-        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
-        m_MethodName: ToggleWindow
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &1855934481
 GameObject:
   m_ObjectHideFlags: 0
@@ -7174,12 +7150,12 @@ MonoBehaviour:
   - {fileID: 531108420}
   - {fileID: 1189817258257396895}
   - {fileID: 1189817258780655512}
+  selectedItemName: 
+  useOrEquipButton: {fileID: 1855442532}
+  discardButton: {fileID: 969730197}
   itemWindowNameText: {fileID: 670629053}
   itemWindowDescText: {fileID: 450890057}
   useOrEquipButtonText: {fileID: 1870289893}
-  selectedItemName: 
-  selectedItemItself: {fileID: 0}
-  itemButtons: []
   itemsParent: {fileID: 67293714}
   itemButtonPrefab: {fileID: 8823565547934667357, guid: 0e466db605652604d882bb505555092f, type: 3}
 --- !u!114 &144629284561347165

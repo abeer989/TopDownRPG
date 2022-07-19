@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     public PlayerStats[] playerStatsList;
 
     [Header("INVENTORY SYSTEM")]
-    public List<string> itemsHeld;
+    public List<ItemDetailsHolder> itemsHeldDetails;
     public List<int> quantitiesOfItemsHeld;
 
     [Space]
@@ -40,31 +40,78 @@ public class GameManager : MonoBehaviour
             PlayerController.instance.CanMove = true;
     }
 
-    public void AddItemToInventory(Sprite itemSprite, string itemName, string itemDesc, int itemQuantity)
+    public void AddItemToInventory(ItemDetailsHolder itemDetails, int itemQuantity)
     {
-        if (!itemsHeld.Contains(itemName))
+        bool itemAlreadyInInventory = false;
+        int itemDetailsIndex = 0;
+
+        if (itemsHeldDetails.Count > 0)
         {
-            itemsHeld.Add(itemName);
+            foreach (ItemDetailsHolder id in itemsHeldDetails)
+            {
+                if (id.itemName == itemDetails.itemName)
+                {
+                    itemAlreadyInInventory = true;
+                    itemDetailsIndex = itemsHeldDetails.IndexOf(id);
+                    break;
+                }
+            } 
+        }
+
+        if (!itemAlreadyInInventory)
+        {
+            itemsHeldDetails.Add(itemDetails);
             quantitiesOfItemsHeld.Add(itemQuantity);
-            UIController.instance.CreateInventoryItemButtons(buttonSprite: itemSprite,
-                                                             nameOnButton: itemName,
-                                                             descOnButton: itemDesc,
-                                                             quantityOnButton: itemQuantity);
+            UIController.instance.CreateInventoryItemButtons(itemDetailsOnButton: itemDetails, quantityOnButton: itemQuantity);
         }
 
         else
         {
-            int index = itemsHeld.IndexOf(itemName);
-
-            if (index < quantitiesOfItemsHeld.Count)
+            if (itemDetailsIndex < quantitiesOfItemsHeld.Count)
             {
-                quantitiesOfItemsHeld[index] += itemQuantity;
+                quantitiesOfItemsHeld[itemDetailsIndex] += itemQuantity;
                 // send updated quantity to button:
-                UIController.instance.CreateInventoryItemButtons(buttonSprite: itemSprite,
-                                                                 nameOnButton: itemName,
-                                                                 descOnButton: itemDesc,
-                                                                 quantityOnButton: quantitiesOfItemsHeld[index]);
+                UIController.instance.CreateInventoryItemButtons(itemDetailsOnButton: itemDetails, quantityOnButton: quantitiesOfItemsHeld[itemDetailsIndex]);
             }
         }
+    }
+
+    public void DiscardItemFromInventory (string itemToDelete, int quantitityToDelete)
+    {
+        if (!string.IsNullOrEmpty(itemToDelete))
+        {
+            int itemIndex = 0;
+
+            foreach (ItemDetailsHolder item in itemsHeldDetails)
+            {
+                if (itemToDelete == item.itemName)
+                {
+                    itemIndex = itemsHeldDetails.IndexOf(item);
+                    break;
+                }
+            }
+
+            if (itemIndex < quantitiesOfItemsHeld.Count)
+            {
+
+
+                if (quantitiesOfItemsHeld[itemIndex] > 0)
+                {
+                    quantitiesOfItemsHeld[itemIndex] -= quantitityToDelete;
+                    UIController.instance.DeleteInventoryItemButtons(itemToDelete, quantitiesOfItemsHeld[itemIndex]);
+
+                    if (quantitiesOfItemsHeld[itemIndex] == 0)
+                    {
+                        //quantitiesOfItemsHeld[itemIndex] = 0;
+                        UIController.instance.DeleteInventoryItemButtons(itemToDelete, 0);
+                        itemsHeldDetails.RemoveAt(itemIndex);
+                        quantitiesOfItemsHeld.RemoveAt(itemIndex);
+                        return;
+                    }
+                }
+
+                //UIController.instance.DeleteInventoryItemButtons(itemToDelete, quantitiesOfItemsHeld[itemIndex]);
+            }
+        } 
     }
 }

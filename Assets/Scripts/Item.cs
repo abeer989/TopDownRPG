@@ -29,31 +29,6 @@ public class Item : MonoBehaviour
             spriteRenderer.sprite = itemSprite;
     }
 
-    public ItemType Item_Type
-    {
-        get { return itemType; }
-    }    
-    
-    public string ItemName
-    {
-        get { return itemName; }
-    }
-
-    public string Description
-    {
-        get { return description; }
-    }
-
-    public int SellWorth
-    {
-        get { return sellWorth; }
-    }
-
-    public int StatAdditionAmount
-    {
-        get { return itemAdditionFactor; }
-    }
-
     public enum ItemType
     {
         none,
@@ -70,8 +45,20 @@ public class Item : MonoBehaviour
     {
         if (other.CompareTag(playerTag))
         {
-            GameManager.instance.AddItemToInventory(itemSprite: itemSprite, itemName: gameObject.name, itemDesc: description, itemQuantity: 1);
-            Destroy(gameObject);
+            ItemDetailsHolder itemDetails = new ItemDetailsHolder(_itemType: itemType, _itemSprite: itemSprite,
+                                                                  _itemName: itemName, _description: description,
+                                                                  _sellWorth: sellWorth,
+                                                                  _itemAdditionFactor: itemAdditionFactor,
+                                                                  _weaponPower: weaponPower, _armorPower: armorPower);
+
+            GameManager.instance.AddItemToInventory(itemDetails: itemDetails, itemQuantity: 1);
+            Destroy();
         }
+    }
+
+    void Destroy()
+    {
+        gameObject.SetActive(false);
+        Destroy(gameObject, .5f);
     }
 }

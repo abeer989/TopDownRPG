@@ -234,6 +234,8 @@ MonoBehaviour:
   - {fileID: 1628051948}
   - {fileID: 7299125677198091820}
   - {fileID: 4551098147113405878}
+  itemsHeldDetails: []
+  quantitiesOfItemsHeld: 
   gameMenuOpen: 0
   switchingScenes: 0
   dialogActive: 0

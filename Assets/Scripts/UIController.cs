@@ -41,20 +41,19 @@ public class UIController : MonoBehaviour
 
     [Space]
     [Header("Items Window")]
-    [SerializeField] string selectedItemName;
-    //[SerializeField] Item selectedItemItself;
-    
+    string selectedItemName;
+
     [Space]
     [SerializeField] Button useOrEquipButton;
     [SerializeField] Button discardButton;
 
     [Space]
-    public TextMeshProUGUI itemWindowNameText;
-    public TextMeshProUGUI itemWindowDescText;
-    public TextMeshProUGUI useOrEquipButtonText;
+    [SerializeField] TextMeshProUGUI itemWindowNameText;
+    [SerializeField] TextMeshProUGUI itemWindowDescText;
+    [SerializeField] TextMeshProUGUI useOrEquipButtonText;
 
     [Space]
-    public List<ItemButton> itemButtons;
+    List<ItemButton> itemButtons;
     [SerializeField] Transform itemsParent;
     [SerializeField] GameObject itemButtonPrefab;
 
@@ -79,6 +78,12 @@ public class UIController : MonoBehaviour
         }
 
         Time.timeScale = 1;
+        itemButtons = new List<ItemButton>();
+    }
+
+    private void Start()
+    {
+        discardButton.onClick.AddListener(() => GameManager.instance.DiscardItemFromInventory(selectedItemName, 1));
     }
 
     private void Update()
@@ -117,8 +122,9 @@ public class UIController : MonoBehaviour
         }
     }
 
+    public void ClearSelectedItem() => selectedItemName = string.Empty;
 
-    public void CreateInventoryItemButtons(Sprite buttonSprite, string nameOnButton, string descOnButton, int quantityOnButton)
+    public void CreateInventoryItemButtons(ItemDetailsHolder itemDetailsOnButton, int quantityOnButton)
     {
         if (!useOrEquipButton.gameObject.activeInHierarchy && !discardButton.gameObject.activeInHierarchy)
         {
@@ -129,13 +135,16 @@ public class UIController : MonoBehaviour
         bool buttonAlreadyInList = false;
         int buttonIndex = 0;
 
-        foreach (ItemButton itemButton in itemButtons)
+        if (itemButtons.Count > 0)
         {
-            if (itemButton.ButtonImage.sprite == buttonSprite)
+            foreach (ItemButton itemButton in itemButtons)
             {
-                buttonAlreadyInList = true;
-                buttonIndex = itemButtons.IndexOf(itemButton);
-                break;
+                if (itemButton.ItemDetails.itemName == itemDetailsOnButton.itemName)
+                {
+                    buttonAlreadyInList = true;
+                    buttonIndex = itemButtons.IndexOf(itemButton);
+                    break;
+                }
             }
         }
 
@@ -146,10 +155,9 @@ public class UIController : MonoBehaviour
 
             if (itemButtonComp)
             {
-                itemButtonComp.ButtonImage.sprite = buttonSprite;
+                itemButtonComp.ButtonImage.sprite = itemDetailsOnButton.itemSprite;
                 itemButtonComp.ItemQuantity.SetText(quantityOnButton.ToString());
-                itemButtonComp.ItemName = nameOnButton;
-                itemButtonComp.ItemDesc = descOnButton;
+                itemButtonComp.ItemDetails = itemDetailsOnButton;
             }
 
             itemButtons.Add(itemButtonComp);
@@ -157,6 +165,31 @@ public class UIController : MonoBehaviour
 
         else
             itemButtons[buttonIndex].ItemQuantity.SetText(quantityOnButton.ToString());
+    }
+
+    public void DeleteInventoryItemButtons(string buttonToDelete, int quantityToDeleteOnButton)
+    {
+        int buttonIndex = 0;
+
+        foreach (ItemButton button in itemButtons)
+        {
+            if (button.ItemDetails.itemName == buttonToDelete)
+            {
+                buttonIndex = itemButtons.IndexOf(button);
+                break;
+            }
+        }
+
+        ItemButton buttonUC = itemButtons[buttonIndex];
+
+        if (quantityToDeleteOnButton == 0)
+        {
+            Destroy(buttonUC.gameObject);
+            itemButtons.Remove(buttonUC);
+        }
+
+        if (quantityToDeleteOnButton > 0)
+            buttonUC.ItemQuantity.SetText(quantityToDeleteOnButton.ToString());
     }
 
     void UpdateStats()
@@ -196,11 +229,17 @@ public class UIController : MonoBehaviour
         }
     }
 
-    public void SelectItem(string itemName, string itemDesc)
+    public void SelectItem(ItemDetailsHolder itemDetails)
     {
-        selectedItemName = itemName;
-        itemWindowNameText.SetText(itemName);
-        itemWindowDescText.SetText(itemDesc);
+        selectedItemName = itemDetails.itemName;
+        itemWindowNameText.SetText(itemDetails.itemName);
+        itemWindowDescText.SetText(itemDetails.description);
+
+        if (itemDetails.itemType != Item.ItemType.weapon && itemDetails.itemType != Item.ItemType.armor)
+            useOrEquipButtonText.SetText("USE");
+
+        else
+            useOrEquipButtonText.SetText("EQUIP");
     }
 
     // function to update the values in the stats window.
@@ -269,8 +308,8 @@ public class UIController : MonoBehaviour
     {
         shouldFadeToBlack = true;
         shouldFadeFromBlack = false;
-    }    
-    
+    }
+
     public void FadeFromBlack()
     {
         shouldFadeFromBlack = true;
