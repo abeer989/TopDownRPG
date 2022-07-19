@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 
     public PlayerStats[] playerStatsList;
 
+    [Header("INVENTORY SYSTEM")]
     public List<string> itemsHeld;
     public List<int> quantitiesOfItemsHeld;
 
@@ -39,22 +40,30 @@ public class GameManager : MonoBehaviour
             PlayerController.instance.CanMove = true;
     }
 
-    public void AddItemToInventory(Sprite _sprite, string item, int itemQuantity)
+    public void AddItemToInventory(Sprite itemSprite, string itemName, string itemDesc, int itemQuantity)
     {
-        if (!itemsHeld.Contains(item))
+        if (!itemsHeld.Contains(itemName))
         {
-            itemsHeld.Add(item);
+            itemsHeld.Add(itemName);
             quantitiesOfItemsHeld.Add(itemQuantity);
-            UIController.instance.CreateInventoryItemButtons(_sprite, itemQuantity);
+            UIController.instance.CreateInventoryItemButtons(buttonSprite: itemSprite,
+                                                             nameOnButton: itemName,
+                                                             descOnButton: itemDesc,
+                                                             quantityOnButton: itemQuantity);
         }
 
         else
         {
-            int index = itemsHeld.IndexOf(item);
+            int index = itemsHeld.IndexOf(itemName);
+
             if (index < quantitiesOfItemsHeld.Count)
             {
                 quantitiesOfItemsHeld[index] += itemQuantity;
-                UIController.instance.CreateInventoryItemButtons(_sprite, quantitiesOfItemsHeld[index]);
+                // send updated quantity to button:
+                UIController.instance.CreateInventoryItemButtons(buttonSprite: itemSprite,
+                                                                 nameOnButton: itemName,
+                                                                 descOnButton: itemDesc,
+                                                                 quantityOnButton: quantitiesOfItemsHeld[index]);
             }
         }
     }

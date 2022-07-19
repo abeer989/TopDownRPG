@@ -70,39 +70,8 @@ public class Item : MonoBehaviour
     {
         if (other.CompareTag(playerTag))
         {
+            GameManager.instance.AddItemToInventory(itemSprite: itemSprite, itemName: gameObject.name, itemDesc: description, itemQuantity: 1);
             Destroy(gameObject);
-
-            switch (itemType)
-            {
-                case ItemType.hp_potion:
-                    Debug.Log("healed");
-                    GameManager.instance.AddItemToInventory(_sprite: itemSprite, item: gameObject.name, itemQuantity: 1);
-                    break;
-
-                case ItemType.mp_potion:
-                    break;
-
-                case ItemType.str_buff:
-                    break;
-
-                case ItemType.def_buff:
-                    break;
-
-                case ItemType.weapon:
-                    break;
-
-                case ItemType.armor:
-                    break;
-
-                case ItemType.collectable:
-                    break;
-
-                case ItemType.none:
-                    break;
-
-                default:
-                    break;
-            } 
         }
     }
 }

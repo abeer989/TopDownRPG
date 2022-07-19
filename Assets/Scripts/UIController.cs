@@ -8,14 +8,15 @@ public class UIController : MonoBehaviour
     public static UIController instance;
 
     [SerializeField] Image fadeImage;
+    [SerializeField] float fadeSpeed;
     [SerializeField] GameObject menuPanel;
 
     [Space]
     [SerializeField] GameObject[] menuWindows;
     [SerializeField] GameObject[] characterInfoHolders;
 
-    [Header("Windows Content")]
-    [Header("STATS WINDOW")]
+    [Header("WINDOWS CONTENT")]
+    [Header("Stats Window")]
     [SerializeField] Image statsPlayerImage;
     [SerializeField] Button[] statsButtons;
     [SerializeField] TextMeshProUGUI[] statsValueTexts; // [0] => name
@@ -38,13 +39,25 @@ public class UIController : MonoBehaviour
     [SerializeField] TextMeshProUGUI[] LVLTexts;
     [SerializeField] Slider[] EXPSliders;
 
-    [Header("ITEM WINDOW")]
-    [SerializeField] Transform itemsParent;
-    [SerializeField] GameObject itemButtonPrefab;
-    public List<ItemButton> itemButtons;
+    [Space]
+    [Header("Items Window")]
+    [SerializeField] string selectedItemName;
+    //[SerializeField] Item selectedItemItself;
+    
+    [Space]
+    [SerializeField] Button useOrEquipButton;
+    [SerializeField] Button discardButton;
 
     [Space]
-    [SerializeField] float fadeSpeed;
+    public TextMeshProUGUI itemWindowNameText;
+    public TextMeshProUGUI itemWindowDescText;
+    public TextMeshProUGUI useOrEquipButtonText;
+
+    [Space]
+    public List<ItemButton> itemButtons;
+    [SerializeField] Transform itemsParent;
+    [SerializeField] GameObject itemButtonPrefab;
+
 
     PlayerStats[] stats;
 
@@ -105,17 +118,23 @@ public class UIController : MonoBehaviour
     }
 
 
-    public void CreateInventoryItemButtons(Sprite sprite, int quantity)
+    public void CreateInventoryItemButtons(Sprite buttonSprite, string nameOnButton, string descOnButton, int quantityOnButton)
     {
+        if (!useOrEquipButton.gameObject.activeInHierarchy && !discardButton.gameObject.activeInHierarchy)
+        {
+            useOrEquipButton.gameObject.SetActive(true);
+            discardButton.gameObject.SetActive(true);
+        }
+
         bool buttonAlreadyInList = false;
         int buttonIndex = 0;
 
-        foreach (ItemButton item in itemButtons)
+        foreach (ItemButton itemButton in itemButtons)
         {
-            if (item.buttonImage.sprite == sprite)
+            if (itemButton.ButtonImage.sprite == buttonSprite)
             {
                 buttonAlreadyInList = true;
-                buttonIndex = itemButtons.IndexOf(item);
+                buttonIndex = itemButtons.IndexOf(itemButton);
                 break;
             }
         }
@@ -127,15 +146,17 @@ public class UIController : MonoBehaviour
 
             if (itemButtonComp)
             {
-                itemButtonComp.buttonImage.sprite = sprite;
-                itemButtonComp.itemQuantity.SetText(quantity.ToString());
+                itemButtonComp.ButtonImage.sprite = buttonSprite;
+                itemButtonComp.ItemQuantity.SetText(quantityOnButton.ToString());
+                itemButtonComp.ItemName = nameOnButton;
+                itemButtonComp.ItemDesc = descOnButton;
             }
 
             itemButtons.Add(itemButtonComp);
         }
 
         else
-            itemButtons[buttonIndex].itemQuantity.SetText(quantity.ToString());
+            itemButtons[buttonIndex].ItemQuantity.SetText(quantityOnButton.ToString());
     }
 
     void UpdateStats()
@@ -173,6 +194,13 @@ public class UIController : MonoBehaviour
                 statsButtons[i].gameObject.SetActive(false);
             }
         }
+    }
+
+    public void SelectItem(string itemName, string itemDesc)
+    {
+        selectedItemName = itemName;
+        itemWindowNameText.SetText(itemName);
+        itemWindowDescText.SetText(itemDesc);
     }
 
     // function to update the values in the stats window.

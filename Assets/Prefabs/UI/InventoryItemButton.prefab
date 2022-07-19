@@ -335,10 +335,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
-        m_MethodName: ToggleWindow
-        m_Mode: 3
+      - m_Target: {fileID: 7265123032614090240}
+        m_TargetAssemblyTypeName: ItemButton, Assembly-CSharp
+        m_MethodName: OnItemButtonPressed
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -359,5 +359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2e72d21d0c126f44b5c37497b71e959, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonImage: {fileID: 8823565547330633048}
-  itemQuantity: {fileID: 8823565547076524535}
+  ButtonImage: {fileID: 8823565547330633048}
+  ItemName: 
+  ItemDesc: 
+  ItemQuantity: {fileID: 8823565547076524535}
