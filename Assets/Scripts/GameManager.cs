@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public bool gameMenuOpen;
     public bool switchingScenes;
     public bool dialogActive;
+    public bool shopActive;
 
     public int Gold
     {
@@ -43,7 +44,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (gameMenuOpen || switchingScenes || dialogActive)
+        if (gameMenuOpen || switchingScenes || dialogActive || shopActive)
             PlayerController.instance.CanMove = false;
 
         else
