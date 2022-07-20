@@ -5,6 +5,9 @@ public class Item : MonoBehaviour
     [SerializeField] ItemType itemType;
 
     [Space]
+    [SerializeField] GameObject interactCanvas;
+
+    [Space]
     [SerializeField] Sprite itemSprite;
     [SerializeField] string itemName;
     [SerializeField] string description;
@@ -19,6 +22,7 @@ public class Item : MonoBehaviour
     [SerializeField] string playerTag;
 
     SpriteRenderer spriteRenderer;
+    bool canPickup;
 
     private void OnEnable()
     {
@@ -41,9 +45,9 @@ public class Item : MonoBehaviour
         collectable
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void Update()
     {
-        if (other.CompareTag(playerTag))
+        if (canPickup && Input.GetKeyDown(key: KeyCode.E) && PlayerController.instance.CanMove)
         {
             ItemDetailsHolder itemDetails = new ItemDetailsHolder(_itemType: itemType, _itemSprite: itemSprite,
                                                                   _itemName: itemName, _description: description,
@@ -51,8 +55,26 @@ public class Item : MonoBehaviour
                                                                   _itemAdditionFactor: itemAdditionFactor,
                                                                   _weaponPower: weaponPower, _armorPower: armorPower);
 
-            GameManager.instance.AddItemToInventory(itemDetails: itemDetails, itemQuantity: 1);
-            Destroy();
+            GameManager.instance.AddItemToInventory(itemToAddDetails: itemDetails, itemQuantity: 1);
+            Destroy(); 
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag(playerTag))
+        {
+            canPickup = true;
+            interactCanvas.SetActive(true);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag(playerTag))
+        {
+            canPickup = false;
+            interactCanvas.SetActive(false);
         }
     }
 
@@ -60,5 +82,20 @@ public class Item : MonoBehaviour
     {
         gameObject.SetActive(false);
         Destroy(gameObject, .5f);
+    }
+
+    public void SetUpItem(ItemDetailsHolder itemToSetUpDetails)
+    {
+        itemType = itemToSetUpDetails.itemType;
+        itemSprite = itemToSetUpDetails.itemSprite;
+        itemName = itemToSetUpDetails.itemName;
+        description = itemToSetUpDetails.description;
+        sellWorth = itemToSetUpDetails.sellWorth;
+        itemAdditionFactor = itemToSetUpDetails.itemAdditionFactor;
+        weaponPower = itemToSetUpDetails.weaponPower;
+        armorPower = itemToSetUpDetails.weaponPower;
+
+        spriteRenderer.sprite = itemSprite;
+        gameObject.name = itemName;
     }
 }

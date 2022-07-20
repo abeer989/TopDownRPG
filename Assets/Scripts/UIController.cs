@@ -10,6 +10,7 @@ public class UIController : MonoBehaviour
     [SerializeField] Image fadeImage;
     [SerializeField] float fadeSpeed;
     [SerializeField] GameObject menuPanel;
+    [SerializeField] TextMeshProUGUI goldAmountText;
 
     [Space]
     [SerializeField] GameObject[] menuWindows;
@@ -39,12 +40,17 @@ public class UIController : MonoBehaviour
     [SerializeField] TextMeshProUGUI[] LVLTexts;
     [SerializeField] Slider[] EXPSliders;
 
-    [Space]
-    [Header("Items Window")]
-    string selectedItemName;
 
     [Space]
-    [SerializeField] Button useOrEquipButton;
+    [Header("Items Window")]
+    [SerializeField] Transform itemsParent;
+    [SerializeField] GameObject itemButtonPrefab;
+
+    [Space]
+    [SerializeField] Button useForWindowButton;
+    [SerializeField] Button useOrEquipP1Button;
+    [SerializeField] Button useOrEquipP2Button;
+    [SerializeField] Button useOrEquipP3Button;
     [SerializeField] Button discardButton;
 
     [Space]
@@ -53,12 +59,13 @@ public class UIController : MonoBehaviour
     [SerializeField] TextMeshProUGUI useOrEquipButtonText;
 
     [Space]
-    List<ItemButton> itemButtons;
-    [SerializeField] Transform itemsParent;
-    [SerializeField] GameObject itemButtonPrefab;
-
+    [SerializeField] GameObject useForWindow;
+    [SerializeField] List<TextMeshProUGUI> useForWindowButtonLabels;
 
     PlayerStats[] stats;
+    List<ItemButton> itemButtons;
+
+    ItemDetailsHolder selectedItemDetails;
 
     bool shouldFadeToBlack;
     bool shouldFadeFromBlack;
@@ -81,10 +88,7 @@ public class UIController : MonoBehaviour
         itemButtons = new List<ItemButton>();
     }
 
-    private void Start()
-    {
-        discardButton.onClick.AddListener(() => GameManager.instance.DiscardItemFromInventory(selectedItemName, 1));
-    }
+    private void Start() => AssignListenersToButtons();
 
     private void Update()
     {
@@ -94,7 +98,6 @@ public class UIController : MonoBehaviour
             {
                 menuPanel.SetActive(true);
                 Time.timeScale = 0;
-                //UpdateInventoryItems();
                 UpdateStats();
                 GameManager.instance.gameMenuOpen = true;
             }
@@ -122,16 +125,21 @@ public class UIController : MonoBehaviour
         }
     }
 
-    public void ClearSelectedItem() => selectedItemName = string.Empty;
-
-    public void CreateInventoryItemButtons(ItemDetailsHolder itemDetailsOnButton, int quantityOnButton)
+    void AssignListenersToButtons()
     {
-        if (!useOrEquipButton.gameObject.activeInHierarchy && !discardButton.gameObject.activeInHierarchy)
-        {
-            useOrEquipButton.gameObject.SetActive(true);
-            discardButton.gameObject.SetActive(true);
-        }
+        discardButton.onClick.RemoveAllListeners();
+        useOrEquipP1Button.onClick.RemoveAllListeners();
+        useOrEquipP2Button.onClick.RemoveAllListeners();
+        useOrEquipP3Button.onClick.RemoveAllListeners();
 
+        discardButton.onClick.AddListener(() => GameManager.instance.DiscardItemFromInventory(itemToDeleteDetails: selectedItemDetails, quantitityToDelete: 1));
+        useOrEquipP1Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 0, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
+        useOrEquipP2Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 1, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
+        useOrEquipP3Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 2, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
+    }
+
+    public void CreateOrUpdateCorrespondingInventoryButton(ItemDetailsHolder itemDetailsOnButton, int quantityOnButton)
+    {
         bool buttonAlreadyInList = false;
         int buttonIndex = 0;
 
@@ -167,12 +175,15 @@ public class UIController : MonoBehaviour
             itemButtons[buttonIndex].ItemQuantity.SetText(quantityOnButton.ToString());
     }
 
-    public void DeleteInventoryItemButtons(string buttonToDelete, int quantityToDeleteOnButton)
+    public void DeleteCorrespondingInventoryButton(string buttonToDelete, int quantityToDeleteOnButton)
     {
         int buttonIndex = 0;
 
+        // finding the right button in the itemButtons array against the
+        // buttonToDelete arg. that was passed:
         foreach (ItemButton button in itemButtons)
         {
+            // when the button is found, record its index: 
             if (button.ItemDetails.itemName == buttonToDelete)
             {
                 buttonIndex = itemButtons.IndexOf(button);
@@ -180,15 +191,20 @@ public class UIController : MonoBehaviour
             }
         }
 
+        // cache the button in a variable:
         ItemButton buttonUC = itemButtons[buttonIndex];
 
-        if (quantityToDeleteOnButton == 0)
+        if (quantityToDeleteOnButton <= 0)
         {
+            // if the quantity of the corresponding inv. item <= 0
+            // the button will get destroyed and removed from the itemButtons list as well:
             Destroy(buttonUC.gameObject);
             itemButtons.Remove(buttonUC);
         }
 
-        if (quantityToDeleteOnButton > 0)
+        // else if the quantity of the corresponding inv. item > 0
+        // just update the quantity on the button:
+        else if (quantityToDeleteOnButton > 0)
             buttonUC.ItemQuantity.SetText(quantityToDeleteOnButton.ToString());
     }
 
@@ -227,19 +243,42 @@ public class UIController : MonoBehaviour
                 statsButtons[i].gameObject.SetActive(false);
             }
         }
+
+        goldAmountText.SetText(GameManager.instance.Gold.ToString() + "g");
     }
 
     public void SelectItem(ItemDetailsHolder itemDetails)
     {
-        selectedItemName = itemDetails.itemName;
+        selectedItemDetails = itemDetails;
         itemWindowNameText.SetText(itemDetails.itemName);
         itemWindowDescText.SetText(itemDetails.description);
 
-        if (itemDetails.itemType != Item.ItemType.weapon && itemDetails.itemType != Item.ItemType.armor)
+        useForWindowButton.gameObject.SetActive(true);
+        discardButton.gameObject.SetActive(true);
+
+        if (selectedItemDetails.itemType != Item.ItemType.weapon && selectedItemDetails.itemType != Item.ItemType.armor)
             useOrEquipButtonText.SetText("USE");
 
         else
             useOrEquipButtonText.SetText("EQUIP");
+    }
+
+    public void ClearSelectedItem()
+    {
+        selectedItemDetails = new ItemDetailsHolder(_itemType: Item.ItemType.none,
+                                                    _itemSprite: null,
+                                                    _itemName: string.Empty,
+                                                    _description: string.Empty,
+                                                    _sellWorth: 0,
+                                                    _itemAdditionFactor: 0,
+                                                    _weaponPower: 0,
+                                                    _armorPower: 0);
+
+        itemWindowNameText.SetText(string.Empty);
+        itemWindowDescText.SetText(string.Empty);
+
+        useForWindowButton.gameObject.SetActive(false);
+        discardButton.gameObject.SetActive(false);
     }
 
     // function to update the values in the stats window.
@@ -260,16 +299,16 @@ public class UIController : MonoBehaviour
             statsValueTexts[4].SetText(stats[statsIndex].defence.ToString());
 
             {
-                if (!string.IsNullOrEmpty(stats[statsIndex].equippedWeapon))
-                    statsValueTexts[5].SetText(stats[statsIndex].equippedWeapon);
+                if (!string.IsNullOrEmpty(stats[statsIndex].equippedWeapon.itemName))
+                    statsValueTexts[5].SetText(stats[statsIndex].equippedWeapon.itemName);
 
                 else
                     statsValueTexts[5].SetText("NONE");
             }
 
             {
-                if (!string.IsNullOrEmpty(stats[statsIndex].equippedArmor))
-                    statsValueTexts[7].SetText(stats[statsIndex].equippedArmor);
+                if (!string.IsNullOrEmpty(stats[statsIndex].equippedArmor.itemName))
+                    statsValueTexts[7].SetText(stats[statsIndex].equippedArmor.itemName);
 
                 else
                     statsValueTexts[7].SetText("NONE");
@@ -285,6 +324,7 @@ public class UIController : MonoBehaviour
     public void ToggleWindow(int windowIndex)
     {
         UpdateStats();
+        CloseUseForWindow();
 
         for (int i = 0; i < menuWindows.Length; i++)
         {
@@ -296,10 +336,31 @@ public class UIController : MonoBehaviour
         }
     }
 
+    public void OpenUseForWindow()
+    {
+        if (!string.IsNullOrEmpty(selectedItemDetails.itemName))
+        {
+            useForWindow.SetActive(true);
+
+            for (int i = 0; i < useForWindowButtonLabels.Count; i++)
+            {
+                useForWindowButtonLabels[i].SetText(GameManager.instance.playerStatsList[i].characterName);
+                useForWindowButtonLabels[i].transform.parent.gameObject.SetActive(GameManager.instance.playerStatsList[i].gameObject.activeInHierarchy);
+            } 
+        }
+    }    
+    
+    public void CloseUseForWindow()
+    {
+        useForWindow.SetActive(false);
+        ClearSelectedItem();
+    }
+
     public void CloseMenu()
     {
         foreach (GameObject window in menuWindows) window.SetActive(false);
         menuPanel.SetActive(false);
+        CloseUseForWindow();
         Time.timeScale = 1;
         GameManager.instance.gameMenuOpen = false;
     }

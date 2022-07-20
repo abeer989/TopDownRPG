@@ -8,8 +8,5 @@ public class ItemButton : MonoBehaviour
     public TextMeshProUGUI ItemQuantity;
     public ItemDetailsHolder ItemDetails;
 
-    public void OnItemButtonPressed()
-    {
-        UIController.instance.SelectItem(ItemDetails);
-    }
+    public void OnItemButtonPressed() => UIController.instance.SelectItem(itemDetails: ItemDetails);
 }

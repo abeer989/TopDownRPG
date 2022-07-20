@@ -20,8 +20,13 @@ public class PlayerStats : MonoBehaviour
     public int defence = 10;
     public int weaponPower;
     public int armorPower;
-    public string equippedWeapon;
-    public string equippedArmor;
+
+    // equipped wpn and armr have been set to be ItemDetailsHolder type objects
+    // because in the GameManager.UseItemInInvetory() func., there's a check that sees if a wpn/armr
+    // is already equipped, it'll be added back to the inventory using the GameManager.AddItemToInventory() function
+    // that requires a ItemDetailsHolder type argument:
+    public ItemDetailsHolder equippedWeapon;
+    public ItemDetailsHolder equippedArmor;
 
     [Space]
     public Sprite playerSprite;
