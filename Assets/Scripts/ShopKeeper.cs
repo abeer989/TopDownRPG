@@ -4,8 +4,10 @@ using UnityEngine;
 public class ShopKeeper : MonoBehaviour
 {
     [SerializeField] GameObject interactCanvas;
-    [SerializeField] List<ItemDetailsHolder> itemsForSale;
+    [SerializeField] List<ItemScriptable> itemsForSale;
+    //public List<int> itemQuantities;
 
+    [Space]
     [SerializeField] string playerTag;
 
     bool canActivate;
@@ -16,6 +18,8 @@ public class ShopKeeper : MonoBehaviour
         {
             ShopManager.instance.itemsForSale = itemsForSale;
             ShopManager.instance.OpenShop();
+            //ShopManager.instance.itemQuantities = itemQuantities;
+            //ShopManager.instance.UpdateActiveShopkeeper(this);
         }
     }
 

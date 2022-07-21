@@ -7,11 +7,12 @@ public class GameManager : MonoBehaviour
 
     public PlayerStats[] playerStatsList;
 
-    int gold = 20;
+    int gold = 1000;
 
     [Header("INVENTORY SYSTEM")]
     [SerializeField] GameObject itemPrefab;
-    [SerializeField] List<ItemDetailsHolder> itemsHeldDetails;
+    //[SerializeField] List<ItemDetailsHolder> itemsHeldDetails;
+    [SerializeField] List<ItemScriptable> itemsHeldDetails;
     [SerializeField] List<int> quantitiesOfItemsHeld;
 
 
@@ -52,7 +53,52 @@ public class GameManager : MonoBehaviour
     }
 
     #region Inventory Management
-    public void AddItemToInventory(ItemDetailsHolder itemToAddDetails, int itemQuantity)
+    //public void AddItemToInventory(ItemDetailsHolder itemToAddDetails, int itemQuantity)
+    //{
+    //    // setting up local vars:
+    //    bool itemAlreadyInInventory = false;
+    //    int itemDetailsIndex = 0;
+
+    //    if (itemsHeldDetails.Count > 0)
+    //    {
+    //        foreach (ItemDetailsHolder id in itemsHeldDetails)
+    //        {
+    //            // when the item is added, its itemDetails get passed into the func.
+    //            // We check if the item already exists in the inventory, so we don't have to create
+    //            // another entry for it in the itemsHeldDetails (inventory) list:
+    //            if (id.ItemName == itemToAddDetails.ItemName)
+    //            {
+    //                itemAlreadyInInventory = true;
+    //                itemDetailsIndex = itemsHeldDetails.IndexOf(id); // if it exixts, we cache its index in the itemsHeldDetails list
+    //                break;
+    //            }
+    //        }
+    //    }
+
+    //    // if the item doesn't already exist in the list, we add it to the list,
+    //    // we add the quantity that was also passed as an arg. in the quantitiesOfItemsHeld list at the same index
+    //    // and finally, create a UI button to reflect its presence in the inv.:
+    //    if (!itemAlreadyInInventory)
+    //    {
+    //        itemsHeldDetails.Add(itemToAddDetails);
+    //        quantitiesOfItemsHeld.Add(itemQuantity);
+    //        UIController.instance.CreateOrUpdateCorrespondingInventoryButton(itemDetailsOnButton: itemToAddDetails, quantityOnButton: itemQuantity);
+    //    }
+
+    //    else
+    //    {
+    //        // else if the item doesn't already exist in the inventory,
+    //        // we just increase its quantity in the quantitiesOfItemsHeld list:
+    //        if (itemDetailsIndex < quantitiesOfItemsHeld.Count)
+    //        {
+    //            quantitiesOfItemsHeld[itemDetailsIndex] += itemQuantity;
+    //            // send updated quantity to button:
+    //            UIController.instance.CreateOrUpdateCorrespondingInventoryButton(itemDetailsOnButton: itemToAddDetails, quantityOnButton: quantitiesOfItemsHeld[itemDetailsIndex]);
+    //        }
+    //    }
+    //}
+
+    public void AddItemToInventory(ItemScriptable itemToAddDetails, int itemQuantity)
     {
         // setting up local vars:
         bool itemAlreadyInInventory = false;
@@ -60,12 +106,12 @@ public class GameManager : MonoBehaviour
 
         if (itemsHeldDetails.Count > 0)
         {
-            foreach (ItemDetailsHolder id in itemsHeldDetails)
+            foreach (ItemScriptable id in itemsHeldDetails)
             {
                 // when the item is added, its itemDetails get passed into the func.
                 // We check if the item already exists in the inventory, so we don't have to create
                 // another entry for it in the itemsHeldDetails (inventory) list:
-                if (id.itemName == itemToAddDetails.itemName)
+                if (id.ItemName == itemToAddDetails.ItemName)
                 {
                     itemAlreadyInInventory = true;
                     itemDetailsIndex = itemsHeldDetails.IndexOf(id); // if it exixts, we cache its index in the itemsHeldDetails list
@@ -97,26 +143,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UseItemInInvetory(int charToUseOnIndex, ItemDetailsHolder itemToUseDetails, int quantityToUse)
+    public void UseItemInInvetory(int charToUseOnIndex, ItemScriptable itemToUseDetails, int quantityToUse)
     {
         // caching selectedCharacter using the charToUseOnIndex arg.:
         PlayerStats selectedCharacter = playerStatsList[charToUseOnIndex];
 
-        switch (itemToUseDetails.itemType)
+        switch (itemToUseDetails.ItemType)
         {
             // applying the effect of the item depending on its type:
             case Item.ItemType.none:
                 break;
 
             case Item.ItemType.hp_potion:
-                selectedCharacter.currentHP += itemToUseDetails.itemAdditionFactor;
+                selectedCharacter.currentHP += itemToUseDetails.ItemAdditionFactor;
 
                 if (selectedCharacter.currentHP >= selectedCharacter.maxHP)
                     selectedCharacter.currentHP = selectedCharacter.maxHP;
                 break;
 
             case Item.ItemType.mp_potion:
-                selectedCharacter.currentMP += itemToUseDetails.itemAdditionFactor;
+                selectedCharacter.currentMP += itemToUseDetails.ItemAdditionFactor;
 
                 if (selectedCharacter.currentMP >= selectedCharacter.maxMP)
                     selectedCharacter.currentMP = selectedCharacter.maxMP;
@@ -125,29 +171,41 @@ public class GameManager : MonoBehaviour
             case Item.ItemType.weapon:
                 // if a weapon is already equipped, it's going
                 // to be added back to the inventory:
-                if (!string.IsNullOrEmpty(selectedCharacter.equippedWeapon.itemName))
-                    AddItemToInventory(itemToAddDetails: selectedCharacter.equippedWeapon, itemQuantity: 1);
+                if (selectedCharacter.equippedWeapon != null)
+                {
+                    if (!string.IsNullOrEmpty(selectedCharacter.equippedWeapon.ItemName))
+                    {
+                        AddItemToInventory(itemToAddDetails: selectedCharacter.equippedWeapon, itemQuantity: 1);
+                        UIController.instance.CallShowReturnMessageCR(selectedCharacter.equippedWeapon.ItemName);
+                    }
+                }
 
                 selectedCharacter.equippedWeapon = itemToUseDetails;
-                selectedCharacter.weaponPower = itemToUseDetails.weaponPower;
+                selectedCharacter.weaponPower = itemToUseDetails.WeaponPower;
                 break;
 
             case Item.ItemType.armor:
                 // if an armor set is already equipped, it's going
                 // to be added back to the inventory:
-                if (!string.IsNullOrEmpty(selectedCharacter.equippedArmor.itemName))
-                    AddItemToInventory(itemToAddDetails: selectedCharacter.equippedArmor, itemQuantity: 1);
+                if (selectedCharacter.equippedArmor != null)
+                {
+                    if (!string.IsNullOrEmpty(selectedCharacter.equippedArmor.ItemName))
+                    {
+                        AddItemToInventory(itemToAddDetails: selectedCharacter.equippedArmor, itemQuantity: 1);
+                        UIController.instance.CallShowReturnMessageCR(selectedCharacter.equippedArmor.ItemName);
+                    }
+                }
 
                 selectedCharacter.equippedArmor = itemToUseDetails;
-                selectedCharacter.armorPower = itemToUseDetails.armorPower;
+                selectedCharacter.armorPower = itemToUseDetails.ArmorPower;
                 break;
 
             case Item.ItemType.str_buff:
-                selectedCharacter.strength += itemToUseDetails.itemAdditionFactor;
+                selectedCharacter.strength += itemToUseDetails.ItemAdditionFactor;
                 break;
 
             case Item.ItemType.def_buff:
-                selectedCharacter.defence += itemToUseDetails.itemAdditionFactor;
+                selectedCharacter.defence += itemToUseDetails.ItemAdditionFactor;
                 break;
 
             default:
@@ -158,19 +216,19 @@ public class GameManager : MonoBehaviour
         DiscardItemFromInventory(itemToDeleteDetails: itemToUseDetails, quantitityToDelete: quantityToUse, calledFromUse: true); // and then discarding it from the inventory
     }
 
-    public void DiscardItemFromInventory(ItemDetailsHolder itemToDeleteDetails, int quantitityToDelete, bool calledFromUse = false)
+    public void DiscardItemFromInventory(ItemScriptable itemToDeleteDetails, int quantitityToDelete, bool calledFromUse = false)
     {
-        if (!string.IsNullOrEmpty(itemToDeleteDetails.itemName))
+        if (!string.IsNullOrEmpty(itemToDeleteDetails.ItemName))
         {
             int itemIndex = 0;
 
             // looping through the items in inventory to match the name of the itemToDelete that was passed
             // into the func. as an argument:
-            foreach (ItemDetailsHolder item in itemsHeldDetails)
+            foreach (ItemScriptable item in itemsHeldDetails)
             {
                 // when an item of the same name (unique ID) is found
                 // we record the index of it in the itemsHeldDetails (inventory) array:
-                if (itemToDeleteDetails.itemName == item.itemName)
+                if (itemToDeleteDetails.ItemName == item.ItemName)
                 {
                     itemIndex = itemsHeldDetails.IndexOf(item);
                     break;
@@ -196,7 +254,7 @@ public class GameManager : MonoBehaviour
                     }
 
                     // updating quanitity on the corresponding UI button too:
-                    UIController.instance.DeleteCorrespondingInventoryButton(buttonToDelete: itemToDeleteDetails.itemName, quantityToDeleteOnButton: quantitiesOfItemsHeld[itemIndex]);
+                    UIController.instance.DeleteCorrespondingInventoryButton(buttonToDelete: itemToDeleteDetails.ItemName, quantityToDeleteOnButton: quantitiesOfItemsHeld[itemIndex]);
 
                     // if the quantity <= 0
                     if (quantitiesOfItemsHeld[itemIndex] <= 0)
@@ -210,6 +268,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-    } 
+    }
     #endregion
 }

@@ -25,8 +25,8 @@ public class PlayerStats : MonoBehaviour
     // because in the GameManager.UseItemInInvetory() func., there's a check that sees if a wpn/armr
     // is already equipped, it'll be added back to the inventory using the GameManager.AddItemToInventory() function
     // that requires a ItemDetailsHolder type argument:
-    public ItemDetailsHolder equippedWeapon;
-    public ItemDetailsHolder equippedArmor;
+    public ItemScriptable equippedWeapon;
+    public ItemScriptable equippedArmor;
 
     [Space]
     public Sprite playerSprite;

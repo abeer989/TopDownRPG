@@ -287,86 +287,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactCanvas: {fileID: 27956199}
   itemsForSale:
-  - itemType: 1
-    itemSprite: {fileID: -1942174326, guid: 0bc4ed27aef38a44bb72e80f9beb5326, type: 3}
-    itemName: HP Potion
-    description: A mysterious concoction that heals for 50 HP.
-    sellWorth: 10
-    itemAdditionFactor: 50
-    weaponPower: 0
-    armorPower: 0
-  - itemType: 2
-    itemSprite: {fileID: 1175197087, guid: 0bc4ed27aef38a44bb72e80f9beb5326, type: 3}
-    itemName: MP Potion
-    description: A mysterious concoction that recovers mana by 5 points.
-    sellWorth: 20
-    itemAdditionFactor: 5
-    weaponPower: 0
-    armorPower: 0
-  - itemType: 0
-    itemSprite: {fileID: 0}
-    itemName: 
-    description: 
-    sellWorth: 0
-    itemAdditionFactor: 0
-    weaponPower: 0
-    armorPower: 0
-  - itemType: 0
-    itemSprite: {fileID: 0}
-    itemName: 
-    description: 
-    sellWorth: 0
-    itemAdditionFactor: 0
-    weaponPower: 0
-    armorPower: 0
-  - itemType: 0
-    itemSprite: {fileID: 0}
-    itemName: 
-    description: 
-    sellWorth: 0
-    itemAdditionFactor: 0
-    weaponPower: 0
-    armorPower: 0
-  - itemType: 0
-    itemSprite: {fileID: 0}
-    itemName: 
-    description: 
-    sellWorth: 0
-    itemAdditionFactor: 0
-    weaponPower: 0
-    armorPower: 0
-  - itemType: 0
-    itemSprite: {fileID: 0}
-    itemName: 
-    description: 
-    sellWorth: 0
-    itemAdditionFactor: 0
-    weaponPower: 0
-    armorPower: 0
-  - itemType: 0
-    itemSprite: {fileID: 0}
-    itemName: 
-    description: 
-    sellWorth: 0
-    itemAdditionFactor: 0
-    weaponPower: 0
-    armorPower: 0
-  - itemType: 0
-    itemSprite: {fileID: 0}
-    itemName: 
-    description: 
-    sellWorth: 0
-    itemAdditionFactor: 0
-    weaponPower: 0
-    armorPower: 0
-  - itemType: 0
-    itemSprite: {fileID: 0}
-    itemName: 
-    description: 
-    sellWorth: 0
-    itemAdditionFactor: 0
-    weaponPower: 0
-    armorPower: 0
+  - {fileID: 11400000, guid: da96023b999abf944a02cb2053b38cf4, type: 2}
+  - {fileID: 11400000, guid: 5ac0a3ecdada491498442c448820cef0, type: 2}
+  - {fileID: 11400000, guid: ce20fe04da9514745a1be1905eee9331, type: 2}
+  - {fileID: 11400000, guid: c8209c8d40b936743bb67495be8d7e50, type: 2}
+  - {fileID: 11400000, guid: f4c64f0500478a44aba08282c53a5ee0, type: 2}
+  - {fileID: 11400000, guid: 0f75b9df14c1ee940a6fae1c3c4f4392, type: 2}
+  - {fileID: 11400000, guid: 74021f6c03eeec046acd9192c95f41e4, type: 2}
+  - {fileID: 11400000, guid: 94873ed02bd3f7740ae8ae42e530e900, type: 2}
   playerTag: Player
 --- !u!1 &261866425
 GameObject:
@@ -1339,58 +1267,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 271300366, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 271300366, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 271300366, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 141.31544
-      objectReference: {fileID: 0}
-    - target: {fileID: 271300366, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -147.12779
-      objectReference: {fileID: 0}
-    - target: {fileID: 856110270, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 856110270, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 856110270, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 141.31544
-      objectReference: {fileID: 0}
-    - target: {fileID: 856110270, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -44.0426
-      objectReference: {fileID: 0}
-    - target: {fileID: 1675506579, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1675506579, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1675506579, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 141.31544
-      objectReference: {fileID: 0}
-    - target: {fileID: 1675506579, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -250.213
-      objectReference: {fileID: 0}
-    - target: {fileID: 1806324596, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5625967765118759031, guid: 58350c5257b653148a4e3e587747e426, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1731,10 +1607,6 @@ PrefabInstance:
     - target: {fileID: 8054932003701983613, guid: e0358c21299621d4aa2118ea28d16222, type: 3}
       propertyPath: m_Name
       value: InteractCanvas
-      objectReference: {fileID: 0}
-    - target: {fileID: 8054932003701983613, guid: e0358c21299621d4aa2118ea28d16222, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0358c21299621d4aa2118ea28d16222, type: 3}

@@ -6,7 +6,7 @@ public class ItemButton : MonoBehaviour
 {
     public Image ButtonImage;
     public TextMeshProUGUI ItemQuantity;
-    public ItemDetailsHolder ItemDetails;
+    public ItemScriptable ItemDetails;
 
     public void OnItemButtonPressed() => UIController.instance.SelectItem(itemDetails: ItemDetails);
 }

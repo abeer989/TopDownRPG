@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 
 public class UIController : MonoBehaviour
@@ -54,9 +55,14 @@ public class UIController : MonoBehaviour
     [SerializeField] Button discardButton;
 
     [Space]
+    [SerializeField] float returnTextActiveTime;
+    [SerializeField] float returnTextFadeSpeed;
+
+    [Space]
+    [SerializeField] TextMeshProUGUI returnMessageText;
+    [SerializeField] TextMeshProUGUI useOrEquipButtonText;
     [SerializeField] TextMeshProUGUI itemWindowNameText;
     [SerializeField] TextMeshProUGUI itemWindowDescText;
-    [SerializeField] TextMeshProUGUI useOrEquipButtonText;
 
     [Space]
     [SerializeField] GameObject useForWindow;
@@ -65,7 +71,7 @@ public class UIController : MonoBehaviour
     PlayerStats[] stats;
     List<ItemButton> itemButtons;
 
-    ItemDetailsHolder selectedItemDetails;
+    ItemScriptable selectedItemDetails;
 
     bool shouldFadeToBlack;
     bool shouldFadeFromBlack;
@@ -88,7 +94,13 @@ public class UIController : MonoBehaviour
         itemButtons = new List<ItemButton>();
     }
 
-    private void Start() => AssignListenersToButtons();
+    private void Start()
+    {
+        itemWindowDescText.SetText(string.Empty);
+        itemWindowNameText.SetText(string.Empty);
+        returnMessageText.SetText(string.Empty);
+        AssignListenersToButtons();
+    }
 
     private void Update()
     {
@@ -138,7 +150,7 @@ public class UIController : MonoBehaviour
         useOrEquipP3Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 2, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
     }
 
-    public void CreateOrUpdateCorrespondingInventoryButton(ItemDetailsHolder itemDetailsOnButton, int quantityOnButton)
+    public void CreateOrUpdateCorrespondingInventoryButton(ItemScriptable itemDetailsOnButton, int quantityOnButton)
     {
         bool buttonAlreadyInList = false;
         int buttonIndex = 0;
@@ -147,7 +159,7 @@ public class UIController : MonoBehaviour
         {
             foreach (ItemButton itemButton in itemButtons)
             {
-                if (itemButton.ItemDetails.itemName == itemDetailsOnButton.itemName)
+                if (itemButton.ItemDetails.ItemName == itemDetailsOnButton.ItemName)
                 {
                     buttonAlreadyInList = true;
                     buttonIndex = itemButtons.IndexOf(itemButton);
@@ -163,7 +175,7 @@ public class UIController : MonoBehaviour
 
             if (itemButtonComp)
             {
-                itemButtonComp.ButtonImage.sprite = itemDetailsOnButton.itemSprite;
+                itemButtonComp.ButtonImage.sprite = itemDetailsOnButton.ItemSprite;
                 itemButtonComp.ItemQuantity.SetText(quantityOnButton.ToString());
                 itemButtonComp.ItemDetails = itemDetailsOnButton;
             }
@@ -184,7 +196,7 @@ public class UIController : MonoBehaviour
         foreach (ItemButton button in itemButtons)
         {
             // when the button is found, record its index: 
-            if (button.ItemDetails.itemName == buttonToDelete)
+            if (button.ItemDetails.ItemName == buttonToDelete)
             {
                 buttonIndex = itemButtons.IndexOf(button);
                 break;
@@ -247,16 +259,16 @@ public class UIController : MonoBehaviour
         goldAmountText.SetText(GameManager.instance.Gold.ToString() + "g");
     }
 
-    public void SelectItem(ItemDetailsHolder itemDetails)
+    public void SelectItem(ItemScriptable itemDetails)
     {
         selectedItemDetails = itemDetails;
-        itemWindowNameText.SetText(itemDetails.itemName);
-        itemWindowDescText.SetText(itemDetails.description);
+        itemWindowNameText.SetText(itemDetails.ItemName);
+        itemWindowDescText.SetText(itemDetails.Description);
 
         useForWindowButton.gameObject.SetActive(true);
         discardButton.gameObject.SetActive(true);
 
-        if (selectedItemDetails.itemType != Item.ItemType.weapon && selectedItemDetails.itemType != Item.ItemType.armor)
+        if (selectedItemDetails.ItemType != Item.ItemType.weapon && selectedItemDetails.ItemType != Item.ItemType.armor)
             useOrEquipButtonText.SetText("USE");
 
         else
@@ -265,15 +277,7 @@ public class UIController : MonoBehaviour
 
     public void ClearSelectedItem()
     {
-        selectedItemDetails = new ItemDetailsHolder(_itemType: Item.ItemType.none,
-                                                    _itemSprite: null,
-                                                    _itemName: string.Empty,
-                                                    _description: string.Empty,
-                                                    _sellWorth: 0,
-                                                    _itemAdditionFactor: 0,
-                                                    _weaponPower: 0,
-                                                    _armorPower: 0);
-
+        selectedItemDetails = null;
         itemWindowNameText.SetText(string.Empty);
         itemWindowDescText.SetText(string.Empty);
 
@@ -299,16 +303,22 @@ public class UIController : MonoBehaviour
             statsValueTexts[4].SetText(stats[statsIndex].defence.ToString());
 
             {
-                if (!string.IsNullOrEmpty(stats[statsIndex].equippedWeapon.itemName))
-                    statsValueTexts[5].SetText(stats[statsIndex].equippedWeapon.itemName);
+                if (stats[statsIndex].equippedWeapon != null)
+                {
+                    if (!string.IsNullOrEmpty(stats[statsIndex].equippedWeapon.ItemName))
+                        statsValueTexts[5].SetText(stats[statsIndex].equippedWeapon.ItemName); 
+                }
 
                 else
                     statsValueTexts[5].SetText("NONE");
             }
 
             {
-                if (!string.IsNullOrEmpty(stats[statsIndex].equippedArmor.itemName))
-                    statsValueTexts[7].SetText(stats[statsIndex].equippedArmor.itemName);
+                if (stats[statsIndex].equippedArmor != null)
+                {
+                    if (!string.IsNullOrEmpty(stats[statsIndex].equippedArmor.ItemName))
+                        statsValueTexts[7].SetText(stats[statsIndex].equippedArmor.ItemName); 
+                }
 
                 else
                     statsValueTexts[7].SetText("NONE");
@@ -338,7 +348,7 @@ public class UIController : MonoBehaviour
 
     public void OpenUseForWindow()
     {
-        if (!string.IsNullOrEmpty(selectedItemDetails.itemName))
+        if (!string.IsNullOrEmpty(selectedItemDetails.ItemName))
         {
             useForWindow.SetActive(true);
 
@@ -375,5 +385,32 @@ public class UIController : MonoBehaviour
     {
         shouldFadeFromBlack = true;
         shouldFadeToBlack = false;
+    }
+
+    public void CallShowReturnMessageCR(string message) => StartCoroutine(ShowReturnMessageCR(message));
+
+    IEnumerator ShowReturnMessageCR(string message)
+    {
+        returnMessageText.SetText("Equipped " + message + " has been returned to inventory.");
+
+        while (returnMessageText.color.a < 1)
+        {
+            returnMessageText.color = new Color(returnMessageText.color.r, returnMessageText.color.g, returnMessageText.color.b, Mathf.MoveTowards(returnMessageText.color.a, 1, Time.unscaledDeltaTime * returnTextFadeSpeed));
+            yield return null;
+        }
+
+        while (returnMessageText.color.a == 1)
+        {
+            yield return new WaitForSecondsRealtime(returnTextActiveTime);
+            break;
+        }
+
+        while (returnMessageText.color.a > 0)
+        {
+            returnMessageText.color = new Color(returnMessageText.color.r, returnMessageText.color.g, returnMessageText.color.b, Mathf.MoveTowards(returnMessageText.color.a, 0, Time.unscaledDeltaTime * returnTextFadeSpeed));
+            yield return null;
+        }
+        
+        yield break;
     }
 }
