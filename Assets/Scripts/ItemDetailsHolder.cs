@@ -17,12 +17,12 @@ public struct ItemDetailsHolder
     }
 
     // item details will be cached here:
-    public Item.ItemType itemType { get; private set; }
-    public Sprite itemSprite { get; private set; }
-    public string itemName { get; private set; }
-    public string description { get; private set; }
-    public int sellWorth { get; private set; }
-    public int itemAdditionFactor { get; private set; }
-    public int weaponPower { get; private set; }
-    public int armorPower { get; private set; }
+    public Item.ItemType itemType;
+    public Sprite itemSprite;
+    public string itemName;
+    public string description;
+    public int sellWorth;
+    public int itemAdditionFactor;
+    public int weaponPower;
+    public int armorPower;
 }

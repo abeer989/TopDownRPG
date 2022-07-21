@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,10 +6,18 @@ public class ShopManager : MonoBehaviour
 {
     public static ShopManager instance;
 
+    [Space]
+    public List<ItemDetailsHolder> itemsForSale;
+
     [SerializeField] GameObject shopPanel;
     [SerializeField] GameObject buyWindow;
     [SerializeField] GameObject sellWindow;
     [SerializeField] TextMeshProUGUI shopGoldText;
+
+    public GameObject ShopPanel
+    {
+        get { return shopPanel; }
+    }
 
     private void Awake()
     {
@@ -27,15 +34,10 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
-        if (Input.GetKeyDown(key: KeyCode.K) && !shopPanel.activeInHierarchy)
-            OpenShop();
+        //if (Input.GetKeyDown(key: KeyCode.K) && !shopPanel.activeInHierarchy)
+        //    OpenShop();
     }
 
     public void OpenShop()
