@@ -7,14 +7,14 @@ public class GameManager : MonoBehaviour
 
     public PlayerStats[] playerStatsList;
 
-    int gold = 1000;
+    [Space]
+    [SerializeField] int gold = 100;
 
     [Header("INVENTORY SYSTEM")]
     [SerializeField] GameObject itemPrefab;
     //[SerializeField] List<ItemDetailsHolder> itemsHeldDetails;
     [SerializeField] List<ItemScriptable> itemsHeldDetails;
     [SerializeField] List<int> quantitiesOfItemsHeld;
-
 
     [Space]
     public bool gameMenuOpen;
@@ -26,6 +26,16 @@ public class GameManager : MonoBehaviour
     {
         get { return gold; }
         set { gold = value; }
+    }    
+    
+    public List<ItemScriptable> ItemsHeldDetails
+    {
+        get { return itemsHeldDetails; }
+    }    
+    
+    public List<int> QuantitiesOfItemsHeld
+    {
+        get { return quantitiesOfItemsHeld; }
     }
 
     private void Awake()
@@ -213,10 +223,10 @@ public class GameManager : MonoBehaviour
         }
 
         UIController.instance.CloseUseForWindow(); // close the "use for?" window
-        DiscardItemFromInventory(itemToDeleteDetails: itemToUseDetails, quantitityToDelete: quantityToUse, calledFromUse: true); // and then discarding it from the inventory
+        DiscardItemFromInventory(itemToDeleteDetails: itemToUseDetails, quantitityToDelete: quantityToUse, calledFromUseOrShop: true); // and then discarding it from the inventory
     }
 
-    public void DiscardItemFromInventory(ItemScriptable itemToDeleteDetails, int quantitityToDelete, bool calledFromUse = false)
+    public void DiscardItemFromInventory(ItemScriptable itemToDeleteDetails, int quantitityToDelete, bool calledFromUseOrShop = false)
     {
         if (!string.IsNullOrEmpty(itemToDeleteDetails.ItemName))
         {
@@ -244,7 +254,7 @@ public class GameManager : MonoBehaviour
                     // if the quantity is alread greater than 0:
                     quantitiesOfItemsHeld[itemIndex] -= quantitityToDelete;
 
-                    if (!calledFromUse)
+                    if (!calledFromUseOrShop)
                     {
                         GameObject itemDropped = Instantiate(itemPrefab, PlayerController.instance.transform.position, Quaternion.identity);
                         Item itemComp = itemDropped.GetComponent<Item>();

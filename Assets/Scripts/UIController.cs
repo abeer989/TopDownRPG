@@ -106,7 +106,7 @@ public class UIController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!menuPanel.activeInHierarchy)
+            if (!menuPanel.activeInHierarchy && !GameManager.instance.shopActive && !GameManager.instance.dialogActive && !GameManager.instance.switchingScenes)
             {
                 menuPanel.SetActive(true);
                 Time.timeScale = 0;

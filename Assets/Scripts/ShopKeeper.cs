@@ -21,6 +21,9 @@ public class ShopKeeper : MonoBehaviour
             //ShopManager.instance.itemQuantities = itemQuantities;
             //ShopManager.instance.UpdateActiveShopkeeper(this);
         }
+
+        else if (canActivate && Input.GetKeyDown(KeyCode.Escape) && ShopManager.instance.ShopPanel.activeInHierarchy)
+            ShopManager.instance.CloseShop();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
