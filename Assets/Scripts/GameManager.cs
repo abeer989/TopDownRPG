@@ -16,11 +16,17 @@ public class GameManager : MonoBehaviour
 
     [Space]
     [SerializeField] int gold = 100;
+    [SerializeField] int maxNumberOfItems = 99;
 
     public int Gold
     {
         get { return gold; }
         set { gold = value; }
+    }        
+    
+    public int MaxNumberOfItems
+    {
+        get { return maxNumberOfItems; }
     }    
     
     public List<ItemScriptable> ItemsHeldDetails
@@ -63,50 +69,25 @@ public class GameManager : MonoBehaviour
     }
 
     #region Inventory Management
-    //public void AddItemToInventory(ItemDetailsHolder itemToAddDetails, int itemQuantity)
-    //{
-    //    // setting up local vars:
-    //    bool itemAlreadyInInventory = false;
-    //    int itemDetailsIndex = 0;
+    public int GetItemQuantity(ItemScriptable item)
+    {
+        int index = 0;
+        int itemQuantityInInventory = 0;
 
-    //    if (itemsHeldDetails.Count > 0)
-    //    {
-    //        foreach (ItemDetailsHolder id in itemsHeldDetails)
-    //        {
-    //            // when the item is added, its itemDetails get passed into the func.
-    //            // We check if the item already exists in the inventory, so we don't have to create
-    //            // another entry for it in the itemsHeldDetails (inventory) list:
-    //            if (id.ItemName == itemToAddDetails.ItemName)
-    //            {
-    //                itemAlreadyInInventory = true;
-    //                itemDetailsIndex = itemsHeldDetails.IndexOf(id); // if it exixts, we cache its index in the itemsHeldDetails list
-    //                break;
-    //            }
-    //        }
-    //    }
+        foreach (ItemScriptable i in itemsHeldDetails)
+        {
+            if (i.ItemName == item.ItemName)
+            {
+                index = itemsHeldDetails.IndexOf(i);
+                break;
+            }
+        }
 
-    //    // if the item doesn't already exist in the list, we add it to the list,
-    //    // we add the quantity that was also passed as an arg. in the quantitiesOfItemsHeld list at the same index
-    //    // and finally, create a UI button to reflect its presence in the inv.:
-    //    if (!itemAlreadyInInventory)
-    //    {
-    //        itemsHeldDetails.Add(itemToAddDetails);
-    //        quantitiesOfItemsHeld.Add(itemQuantity);
-    //        UIController.instance.CreateOrUpdateCorrespondingInventoryButton(itemDetailsOnButton: itemToAddDetails, quantityOnButton: itemQuantity);
-    //    }
+        if (index < quantitiesOfItemsHeld.Count)
+            itemQuantityInInventory = quantitiesOfItemsHeld[index];
 
-    //    else
-    //    {
-    //        // else if the item doesn't already exist in the inventory,
-    //        // we just increase its quantity in the quantitiesOfItemsHeld list:
-    //        if (itemDetailsIndex < quantitiesOfItemsHeld.Count)
-    //        {
-    //            quantitiesOfItemsHeld[itemDetailsIndex] += itemQuantity;
-    //            // send updated quantity to button:
-    //            UIController.instance.CreateOrUpdateCorrespondingInventoryButton(itemDetailsOnButton: itemToAddDetails, quantityOnButton: quantitiesOfItemsHeld[itemDetailsIndex]);
-    //        }
-    //    }
-    //}
+        return itemQuantityInInventory;
+    }
 
     public void AddItemToInventory(ItemScriptable itemToAddDetails, int itemQuantity)
     {

@@ -29,6 +29,8 @@ public class ShopManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI buyValueText;
     [SerializeField] TextMeshProUGUI buyMessageText;
     [SerializeField] TMP_InputField buyQuantityIPField;
+    [SerializeField] Button increaseBuyQuantityButton;
+    [SerializeField] Button decreaseBuyQuantityButton;
     [SerializeField] Button buyButton;
     [SerializeField] Button cancelBuyButton;
     List<ShopButton> buyButtons;
@@ -41,6 +43,8 @@ public class ShopManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI sellMessageText;
     [SerializeField] TextMeshProUGUI noItemsText;
     [SerializeField] TMP_InputField sellQuantityIPField;
+    [SerializeField] Button increaseSellQuantityButton;
+    [SerializeField] Button decreaseSellQuantityButton;
     [SerializeField] Button sellButton;
     [SerializeField] Button cancelSellButton;
     List<ShopButton> sellButtons;
@@ -74,11 +78,7 @@ public class ShopManager : MonoBehaviour
         itemsForSale = new List<ItemScriptable>();
     }
 
-    private void Start()
-    {
-        buyQuantityIPField.onValueChanged.AddListener(delegate { OnQuantityChanged(inputField: buyQuantityIPField, quantityString: buyQuantityIPField.text); });
-        sellQuantityIPField.onValueChanged.AddListener(delegate { OnQuantityChanged(inputField: sellQuantityIPField, quantityString: sellQuantityIPField.text, buyWindow: false); });
-    }
+    private void Start() => AssignListeners();
 
     #region General Shop Func.
     /// <summary>
@@ -107,7 +107,7 @@ public class ShopManager : MonoBehaviour
             sellValueText.text = "Value: " + (item.SellWorth).ToString() + "g";
 
             ToggleSellActionWindow(state: true);
-            sellQuantityIPField.text = "" + 1;
+            sellQuantityIPField.text = "" + 0;
         }
     }
 
@@ -163,7 +163,7 @@ public class ShopManager : MonoBehaviour
                 }
 
                 buyButtons.Add(shopButtonComp);
-            } 
+            }
         }
     }
 
@@ -408,38 +408,79 @@ public class ShopManager : MonoBehaviour
     }
     #endregion
 
+
     #region Helper Func.
+    void AssignListeners()
+    {
+        buyQuantityIPField.onValueChanged.RemoveAllListeners();
+        increaseBuyQuantityButton.onClick.RemoveAllListeners();
+        decreaseBuyQuantityButton.onClick.RemoveAllListeners();
+
+        sellQuantityIPField.onValueChanged.RemoveAllListeners();
+        increaseSellQuantityButton.onClick.RemoveAllListeners();
+        decreaseSellQuantityButton.onClick.RemoveAllListeners();
+
+        buyQuantityIPField.onValueChanged.AddListener(delegate { OnQuantityChanged(inputField: buyQuantityIPField, quantityString: buyQuantityIPField.text); });
+        increaseBuyQuantityButton.onClick.AddListener(() => ChangeIPFieldQuantity(inputField: buyQuantityIPField, factor: 1));
+        decreaseBuyQuantityButton.onClick.AddListener(() => ChangeIPFieldQuantity(inputField: buyQuantityIPField, factor: -1));
+
+        sellQuantityIPField.onValueChanged.AddListener(delegate { OnQuantityChanged(inputField: sellQuantityIPField, quantityString: sellQuantityIPField.text, buyWindow: false); });
+        increaseSellQuantityButton.onClick.AddListener(() => ChangeIPFieldQuantity(inputField: sellQuantityIPField, factor: 1));
+        decreaseSellQuantityButton.onClick.AddListener(() => ChangeIPFieldQuantity(inputField: sellQuantityIPField, factor: -1));
+    }
+
     void OnQuantityChanged(TMP_InputField inputField, string quantityString, bool buyWindow = true)
     {
-        int quantity = 0;
-
-        if (!string.IsNullOrEmpty(quantityString))
-        {
-            quantity = int.Parse(quantityString);
-
-            if (quantity == 0)
-            {
-                quantity = 1;
-                inputField.text = quantity.ToString();
-            }
-        }
-
-        else if (string.IsNullOrEmpty(quantityString))
-        {
-            quantity = 1;
-            inputField.text = quantity.ToString();
-        }
-
         if (buyWindow)
         {
-            int totalValue = quantity * selectedItem.SellWorth * 2;
-            buyValueText.SetText("Value: " + totalValue + "g"); 
-        }
+            int quantity;
+            int itemQuantityInInventory = GameManager.instance.GetItemQuantity(item: selectedItem);
+            int buyMaxQuantity = GameManager.instance.MaxNumberOfItems - itemQuantityInInventory;
 
-        else
+            if (!string.IsNullOrEmpty(quantityString))
+            {
+                quantity = int.Parse(quantityString);
+
+                if (quantity <= 0)
+                {
+                    quantity = 1;
+
+                    if (quantity >= buyMaxQuantity)
+                        quantity = 0;
+                }
+
+                else
+                {
+                    if (quantity >= buyMaxQuantity)
+                        quantity = buyMaxQuantity;
+                }
+
+                int totalValue = quantity * selectedItem.SellWorth * 2;
+                buyValueText.SetText("Value: " + totalValue + "g");
+            }
+
+            else
+            {
+                quantity = 1;
+
+                if (quantity >= buyMaxQuantity)
+                    quantity = 0;
+            }
+
+            inputField.text = quantity.ToString();
+        }
+    }
+
+    public void ChangeIPFieldQuantity(TMP_InputField inputField, int factor)
+    {
+        if (inputField.gameObject)
         {
-            int totalValue = quantity * selectedItem.SellWorth;
-            sellValueText.SetText("Value: " + totalValue + "g");
+            if (inputField.gameObject.activeInHierarchy)
+            {
+                int numberFromIPField = int.Parse(inputField.text.Trim());
+                numberFromIPField += factor;
+                inputField.text = numberFromIPField.ToString();
+            }
         }
     }
     #endregion
