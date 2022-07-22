@@ -58,6 +58,8 @@ MonoBehaviour:
   defence: 10
   weaponPower: 10
   armorPower: 10
+  equippedWeapon: {fileID: 0}
+  equippedArmor: {fileID: 0}
   playerSprite: {fileID: 506618871, guid: c1db4699ec9128f41af18ab04aae681e, type: 3}
 --- !u!1 &5241321953728332639
 GameObject:
@@ -117,6 +119,8 @@ MonoBehaviour:
   defence: 10
   weaponPower: 0
   armorPower: 0
+  equippedWeapon: {fileID: 0}
+  equippedArmor: {fileID: 0}
   playerSprite: {fileID: 21300000, guid: e0ddba6d3fcf21f49949fcc95c849aac, type: 3}
 --- !u!1 &6865573195252573209
 GameObject:
@@ -176,6 +180,8 @@ MonoBehaviour:
   defence: 10
   weaponPower: 0
   armorPower: 0
+  equippedWeapon: {fileID: 0}
+  equippedArmor: {fileID: 0}
   playerSprite: {fileID: -308748595, guid: fb8cc55af4b7a034584793949fd90500, type: 3}
 --- !u!1 &6917454584478748606
 GameObject:
@@ -228,9 +234,11 @@ MonoBehaviour:
   - {fileID: 1628051948}
   - {fileID: 7299125677198091820}
   - {fileID: 4551098147113405878}
+  gold: 9000
   itemPrefab: {fileID: 5950303223290285352, guid: 4d03dac156e66034391aaf7f3d7e4bd1, type: 3}
   itemsHeldDetails: []
   quantitiesOfItemsHeld: 
   gameMenuOpen: 0
   switchingScenes: 0
   dialogActive: 0
+  shopActive: 0

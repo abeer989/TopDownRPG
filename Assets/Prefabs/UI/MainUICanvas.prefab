@@ -12605,7 +12605,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 806390776}
         m_TargetAssemblyTypeName: ShopManager, Assembly-CSharp
-        m_MethodName: CancelSellItem
+        m_MethodName: CloseSellActionWindow
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -13182,7 +13182,6 @@ MonoBehaviour:
   buyWindowItemsParent: {fileID: 1711769694}
   sellWindowItemsParent: {fileID: 2973643954887486764}
   shopItemButtonPrefab: {fileID: 8823565547934667357, guid: 8b94dbf38e1351945997bd5c3341ad86, type: 3}
-  itemsForSale: []
   shopPanel: {fileID: 1806324596}
   buyWindow: {fileID: 185739642}
   sellWindow: {fileID: 3337996623741299097}
@@ -13995,7 +13994,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 806390776}
         m_TargetAssemblyTypeName: ShopManager, Assembly-CSharp
-        m_MethodName: CancelBuyItem
+        m_MethodName: CloseBuyActionWindow
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

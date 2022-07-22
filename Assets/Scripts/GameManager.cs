@@ -5,22 +5,17 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public PlayerStats[] playerStatsList;
-
-    [Space]
-    [SerializeField] int gold = 100;
+    [HideInInspector] public bool gameMenuOpen, switchingScenes, dialogActive, shopActive;
+    
+    [SerializeField] PlayerStats[] playerStatsList;
 
     [Header("INVENTORY SYSTEM")]
     [SerializeField] GameObject itemPrefab;
-    //[SerializeField] List<ItemDetailsHolder> itemsHeldDetails;
     [SerializeField] List<ItemScriptable> itemsHeldDetails;
     [SerializeField] List<int> quantitiesOfItemsHeld;
 
     [Space]
-    public bool gameMenuOpen;
-    public bool switchingScenes;
-    public bool dialogActive;
-    public bool shopActive;
+    [SerializeField] int gold = 100;
 
     public int Gold
     {
@@ -36,6 +31,11 @@ public class GameManager : MonoBehaviour
     public List<int> QuantitiesOfItemsHeld
     {
         get { return quantitiesOfItemsHeld; }
+    }    
+    
+    public PlayerStats[] PlayerStatsList
+    {
+        get { return playerStatsList; }
     }
 
     private void Awake()

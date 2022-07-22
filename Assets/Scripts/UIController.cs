@@ -116,6 +116,21 @@ public class UIController : MonoBehaviour
 
             else if (menuPanel.activeInHierarchy)
                 CloseMenu();
+        }        
+        
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            if (!menuPanel.activeInHierarchy && !GameManager.instance.shopActive && !GameManager.instance.dialogActive && !GameManager.instance.switchingScenes)
+            {
+                menuPanel.SetActive(true);
+                Time.timeScale = 0;
+                UpdateStats();
+                ToggleWindow(0);
+                GameManager.instance.gameMenuOpen = true;
+            }
+
+            else if (menuPanel.activeInHierarchy)
+                ToggleWindow(0);
         }
 
         if (shouldFadeToBlack)
@@ -224,7 +239,7 @@ public class UIController : MonoBehaviour
     {
         // copying over the playerStatsList from the GameManager which is a list of
         // the PlayerStats components attached to the diff. characters in-game: 
-        stats = GameManager.instance.playerStatsList;
+        stats = GameManager.instance.PlayerStatsList;
         ShowCharacterStats();
 
         // iterating over the copied list and setting active the corresponding
@@ -354,8 +369,8 @@ public class UIController : MonoBehaviour
 
             for (int i = 0; i < useForWindowButtonLabels.Count; i++)
             {
-                useForWindowButtonLabels[i].SetText(GameManager.instance.playerStatsList[i].characterName);
-                useForWindowButtonLabels[i].transform.parent.gameObject.SetActive(GameManager.instance.playerStatsList[i].gameObject.activeInHierarchy);
+                useForWindowButtonLabels[i].SetText(GameManager.instance.PlayerStatsList[i].characterName);
+                useForWindowButtonLabels[i].transform.parent.gameObject.SetActive(GameManager.instance.PlayerStatsList[i].gameObject.activeInHierarchy);
             } 
         }
     }    

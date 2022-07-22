@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class ShopKeeper : MonoBehaviour
 {
@@ -16,7 +16,8 @@ public class ShopKeeper : MonoBehaviour
     {
         if (canActivate && Input.GetKeyDown(key: KeyCode.E) && PlayerController.instance.CanMove && !ShopManager.instance.ShopPanel.activeInHierarchy)
         {
-            ShopManager.instance.itemsForSale = itemsForSale;
+            // send the items for sale that this shopkeeper has to the ShopManager:
+            ShopManager.instance.GetItemsForSale(itemsFromShopKeeper: itemsForSale);
             ShopManager.instance.OpenShop();
             //ShopManager.instance.itemQuantities = itemQuantities;
             //ShopManager.instance.UpdateActiveShopkeeper(this);

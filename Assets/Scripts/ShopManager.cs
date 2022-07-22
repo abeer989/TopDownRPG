@@ -13,7 +13,7 @@ public class ShopManager : MonoBehaviour
     [SerializeField] GameObject shopItemButtonPrefab;
 
     [Space]
-    public List<ItemScriptable> itemsForSale;
+    List<ItemScriptable> itemsForSale;
     //public List<int> itemQuantities;
 
     [Space]
@@ -71,6 +71,7 @@ public class ShopManager : MonoBehaviour
         }
 
         sellButtons = buyButtons = new List<ShopButton>();
+        itemsForSale = new List<ItemScriptable>();
     }
 
     private void Start()
@@ -80,6 +81,11 @@ public class ShopManager : MonoBehaviour
     }
 
     #region General Shop Func.
+    /// <summary>
+    /// This function sets the selected item to buy/sell and also sets active the 
+    /// action window for the respective screen:
+    /// </summary>
+    /// <param name="item"></param>
     public void SelectItem(ItemScriptable item)
     {
         selectedItem = item;
@@ -105,6 +111,9 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Open shop panel:
+    /// </summary>
     public void OpenShop()
     {
         shopGoldText.SetText(GameManager.instance.Gold.ToString() + "g");
@@ -113,6 +122,9 @@ public class ShopManager : MonoBehaviour
         GameManager.instance.shopActive = true;
     }
 
+    /// <summary>
+    /// Close shop:
+    /// </summary>
     public void CloseShop()
     {
         selectedItem = null;
@@ -123,27 +135,35 @@ public class ShopManager : MonoBehaviour
 
 
     #region Buying
+    /// <summary>
+    /// Populate the buy window with buttons that reflect the shopkeeper's inventory:
+    /// </summary>
     void PopulateBuyWindow()
     {
+        // clear the buyButtons list if there's any buttons in it:
         if (buyButtons.Count > 0)
         {
             buyButtons.ForEach(b => Destroy(b.gameObject));
             buyButtons.Clear();
         }
 
-        for (int i = 0; i < itemsForSale.Count; i++)
+        // creating buttons for all the items in the current shopkeeper's inventory:
+        if (itemsForSale.Count > 0)
         {
-            GameObject buyButton = Instantiate(shopItemButtonPrefab, buyWindowItemsParent);
-            ShopButton shopButtonComp = buyButton.GetComponent<ShopButton>();
-
-            if (shopButtonComp)
+            for (int i = 0; i < itemsForSale.Count; i++)
             {
-                shopButtonComp.ButtonImage.sprite = itemsForSale[i].ItemSprite;
-                shopButtonComp.ItemDetails = itemsForSale[i];
-                shopButtonComp.ItemQuantity.gameObject.SetActive(false);
-            }
+                GameObject buyButton = Instantiate(shopItemButtonPrefab, buyWindowItemsParent);
+                ShopButton shopButtonComp = buyButton.GetComponent<ShopButton>();
 
-            buyButtons.Add(shopButtonComp);
+                if (shopButtonComp)
+                {
+                    shopButtonComp.ButtonImage.sprite = itemsForSale[i].ItemSprite;
+                    shopButtonComp.ItemDetails = itemsForSale[i];
+                    shopButtonComp.ItemQuantity.gameObject.SetActive(false);
+                }
+
+                buyButtons.Add(shopButtonComp);
+            } 
         }
     }
 
@@ -224,9 +244,7 @@ public class ShopManager : MonoBehaviour
                 GameManager.instance.AddItemToInventory(itemToAddDetails: selectedItem, itemQuantity: quantity);
                 StartCoroutine(ShowBuyMessageCR(itemName: selectedItem.ItemName, itemQuantity: quantity));
 
-                ToggleBuyActionWindow(state: false);
-                buyItemNameText.SetText(string.Empty);
-                buyItemDescText.SetText(string.Empty);
+                CloseBuyActionWindow();
             }
 
             else
@@ -234,13 +252,15 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    public void CancelBuyItem()
+    public void CloseBuyActionWindow()
     {
         selectedItem = null;
         ToggleBuyActionWindow(state: false);
         buyItemNameText.SetText(string.Empty);
         buyItemDescText.SetText(string.Empty);
     }
+
+    public void GetItemsForSale(List<ItemScriptable> itemsFromShopKeeper) => itemsForSale = itemsFromShopKeeper;
     #endregion
 
 
@@ -370,10 +390,7 @@ public class ShopManager : MonoBehaviour
                 GameManager.instance.DiscardItemFromInventory(itemToDeleteDetails: selectedItem, quantitityToDelete: sellQuantity, calledFromUseOrShop: true);
                 StartCoroutine(ShowSellMessageCR(itemName: selectedItem.ItemName, itemQuantity: sellQuantity));
 
-                ToggleSellActionWindow(state: false);
-                sellItemNameText.SetText(string.Empty);
-                sellItemDescText.SetText(string.Empty);
-
+                CloseSellActionWindow();
                 PopulateSellWindow();
             }
 
@@ -382,7 +399,7 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    public void CancelSellItem()
+    public void CloseSellActionWindow()
     {
         selectedItem = null;
         ToggleSellActionWindow(state: false);
