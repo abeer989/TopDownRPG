@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 880ce898a49f2cf4097e2c72e52129b0, type: 3}
+  m_Name: Iron Shield
+  m_EditorClassIdentifier: 
+  itemType: 5
+  itemSprite: {fileID: 2129519325, guid: 0bc4ed27aef38a44bb72e80f9beb5326, type: 3}
+  itemName: Iron Shield
+  description: A shield made of Iron.
+  sellWorth: 25
+  itemAdditionFactor: 0
+  weaponPower: 22
+  armorPower: 0

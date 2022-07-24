@@ -431,10 +431,11 @@ public class ShopManager : MonoBehaviour
 
     void OnQuantityChanged(TMP_InputField inputField, string quantityString, bool buyWindow = true)
     {
+        int quantity;
+        int itemQuantityInInventory = GameManager.instance.GetItemQuantity(item: selectedItem);
+
         if (buyWindow)
         {
-            int quantity;
-            int itemQuantityInInventory = GameManager.instance.GetItemQuantity(item: selectedItem);
             int buyMaxQuantity = GameManager.instance.MaxNumberOfItems - itemQuantityInInventory;
 
             if (!string.IsNullOrEmpty(quantityString))
@@ -466,9 +467,42 @@ public class ShopManager : MonoBehaviour
                 if (quantity >= buyMaxQuantity)
                     quantity = 0;
             }
-
-            inputField.text = quantity.ToString();
         }
+
+        else
+        {
+            if (!string.IsNullOrEmpty(quantityString))
+            {
+                quantity = int.Parse(quantityString);
+
+                if (quantity <= 0)
+                {
+                    quantity = 1;
+
+                    if (quantity >= itemQuantityInInventory)
+                        quantity = 0;
+                }
+
+                else
+                {
+                    if (quantity >= itemQuantityInInventory)
+                        quantity = itemQuantityInInventory;
+                }
+
+                int totalValue = quantity * selectedItem.SellWorth;
+                sellValueText.SetText("Value: " + totalValue + "g");
+            }
+
+            else
+            {
+                quantity = 1;
+
+                if (quantity >= itemQuantityInInventory)
+                    quantity = 0;
+            }
+        }
+
+        inputField.text = quantity.ToString();
     }
 
     public void ChangeIPFieldQuantity(TMP_InputField inputField, int factor)

@@ -295,6 +295,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0f75b9df14c1ee940a6fae1c3c4f4392, type: 2}
   - {fileID: 11400000, guid: 74021f6c03eeec046acd9192c95f41e4, type: 2}
   - {fileID: 11400000, guid: 94873ed02bd3f7740ae8ae42e530e900, type: 2}
+  - {fileID: 11400000, guid: d7dc7af868ba3d740b4959ad003a472b, type: 2}
+  - {fileID: 11400000, guid: 68a89b1d4a07653419d0ff4f862b7756, type: 2}
   playerTag: Player
 --- !u!1 &261866425
 GameObject:

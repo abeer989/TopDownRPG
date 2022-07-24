@@ -9,6 +9,13 @@ public class DialogActivator : MonoBehaviour
     [SerializeField] string playerTag;
     [SerializeField] string[] NPCLines;
 
+    [Header("Quest Marking")]
+    [SerializeField] bool shouldMarkQuest;
+
+    [Space]
+    [SerializeField] string questName;
+    [SerializeField] bool markComplete;
+
     bool canActivate;
 
     public enum SpeakerType
@@ -24,6 +31,7 @@ public class DialogActivator : MonoBehaviour
             && NPCLines.Length > 0 && interactCanvas.activeInHierarchy)
         {
             DialogManager.instance.ShowDialog(_NPCLines: NPCLines, _speakerType: speakerType);
+            DialogManager.instance.MarkQuestAtEndOfDialog(_questName: questName, _shouldMarkQuest: shouldMarkQuest, _markComplete: markComplete);
             interactCanvas.SetActive(false);
         }
     }

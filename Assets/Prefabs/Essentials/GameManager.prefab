@@ -193,6 +193,7 @@ GameObject:
   m_Component:
   - component: {fileID: 182548356597634215}
   - component: {fileID: 5126898635127801487}
+  - component: {fileID: 1023540315}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -230,15 +231,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16ce40ee171afca4abe334952e272360, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerStatsList:
-  - {fileID: 1628051948}
-  - {fileID: 7299125677198091820}
-  - {fileID: 4551098147113405878}
-  gold: 9000
-  itemPrefab: {fileID: 5950303223290285352, guid: 4d03dac156e66034391aaf7f3d7e4bd1, type: 3}
-  itemsHeldDetails: []
-  quantitiesOfItemsHeld: 
   gameMenuOpen: 0
   switchingScenes: 0
   dialogActive: 0
   shopActive: 0
+  playerStatsList:
+  - {fileID: 1628051948}
+  - {fileID: 7299125677198091820}
+  - {fileID: 4551098147113405878}
+  itemPrefab: {fileID: 5950303223290285352, guid: 4d03dac156e66034391aaf7f3d7e4bd1, type: 3}
+  itemsHeldDetails: []
+  quantitiesOfItemsHeld: 
+  gold: 9000
+  maxNumberOfItems: 99
+--- !u!114 &1023540315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6917454584478748606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdef7192a7554d3428c10e3d2d873ea2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  quests: []

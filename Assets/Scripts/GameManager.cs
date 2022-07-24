@@ -6,17 +6,17 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     [HideInInspector] public bool gameMenuOpen, switchingScenes, dialogActive, shopActive;
-    
+
+    [SerializeField] int maxNumberOfItems = 99;
+    [SerializeField] int gold = 100;
+
+    [Space]
     [SerializeField] PlayerStats[] playerStatsList;
 
     [Header("INVENTORY SYSTEM")]
     [SerializeField] GameObject itemPrefab;
     [SerializeField] List<ItemScriptable> itemsHeldDetails;
     [SerializeField] List<int> quantitiesOfItemsHeld;
-
-    [Space]
-    [SerializeField] int gold = 100;
-    [SerializeField] int maxNumberOfItems = 99;
 
     public int Gold
     {

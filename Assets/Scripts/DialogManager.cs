@@ -10,8 +10,12 @@ public class DialogManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI nameText;
     [SerializeField] TextMeshProUGUI dialogText;
 
-    [SerializeField] string[] dialogLines;
+    // Quest marking:
+    string questName;
+    bool shouldMarkQuest;
+    bool markComplete;
 
+    string[] dialogLines;
     int currentLineIndex = 0;
 
     public GameObject DialogBox
@@ -45,11 +49,33 @@ public class DialogManager : MonoBehaviour
                 else
                 {
                     dialogBox.SetActive(false);
+
+                    if (shouldMarkQuest)
+                    {
+                        if (markComplete)
+                            QuestManager.instance.MarkQuestComplete(questName);
+
+                        else
+                            QuestManager.instance.MarkQuestIncomplete(questName);
+                    }
+
                     GameManager.instance.dialogActive = false;
                     PlayerController.instance.Animator.enabled = true;
                     currentLineIndex = 0;
                 }
             }
+        }
+    }
+
+    // this func. checks if the string on the current index is a name key (e.g.: n-Nina, n-George, n-Player).
+    // If it is, it changes the name text to the NPC/player name and increments the currentLineIndex, so that the
+    // actual dialog gets displayed in the box:
+    void CheckIfName()
+    {
+        if (dialogLines[currentLineIndex].StartsWith("n-"))
+        {
+            nameText.SetText(dialogLines[currentLineIndex].Replace("n-", ""));
+            currentLineIndex++;
         }
     }
 
@@ -79,15 +105,10 @@ public class DialogManager : MonoBehaviour
         dialogBox.SetActive(true);
     }
 
-    // this func. checks if the string on the current index is a name key (e.g.: n-Nina, n-George, n-Player).
-    // If it is, it changes the name text to the NPC/player name and increments the currentLineIndex, so that the
-    // actual dialog gets displayed in the box:
-    void CheckIfName()
+    public void MarkQuestAtEndOfDialog(string _questName, bool _shouldMarkQuest, bool _markComplete)
     {
-        if (dialogLines[currentLineIndex].StartsWith("n-"))
-        {
-            nameText.SetText(dialogLines[currentLineIndex].Replace("n-", ""));
-            currentLineIndex++;
-        }
+        questName = _questName;
+        shouldMarkQuest = _shouldMarkQuest;
+        markComplete = _markComplete;
     }
 }

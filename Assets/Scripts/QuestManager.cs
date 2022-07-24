@@ -24,21 +24,51 @@ public class QuestManager : MonoBehaviour
 
     void Start()
     {
-        // initialize the questMarkerComplete to have the same number of elements as
-        // the questMarkerNames list:
-        //questMarkerComplete = new List<bool>(new bool[questMarkerNames.Count]);
+        UpdateAllQuests();
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Q))
-            Debug.Log(CheckIfQuestComplete("hello"));        
+            Debug.Log(CheckIfQuestComplete("test"));        
         
         if (Input.GetKeyDown(KeyCode.M))
-            MarkQuestComplete("test test");        
+            MarkQuestComplete("test");        
         
         if (Input.GetKeyDown(KeyCode.K))
-            MarkQuestIncomplete("test test");
+            MarkQuestIncomplete("test");
+    }
+
+    /// <summary>
+    /// this function sets the states of all the objects linked a specific quest to true/false
+    /// depending upon what the value of the ActivationStatus bool on the attached QuestObject script is:
+    /// </summary>
+    /// <param name="quest"></param>
+    void UpdateLinkedObjects(Quest quest)
+    {
+        if (quest.isQuestComplete)
+        {
+            quest.linkedObjects.ForEach(obj =>
+            {
+                obj.gameObject.SetActive(obj.StateAfterQuestCompletion);
+            });
+        }
+
+        else
+        {
+            quest.linkedObjects.ForEach(obj =>
+            {
+                obj.gameObject.SetActive(!obj.StateAfterQuestCompletion);
+            });
+        }
+    }
+
+    void UpdateAllQuests()
+    {
+        quests.ForEach(quest =>
+        {
+            UpdateLinkedObjects(quest);
+        });
     }
 
     /// <summary>
@@ -91,6 +121,7 @@ public class QuestManager : MonoBehaviour
             if (quest.QuestDescription == questToMark)
             {
                 quest.isQuestComplete = true;
+                UpdateLinkedObjects(quest);
                 return;
             }
         });
@@ -103,6 +134,7 @@ public class QuestManager : MonoBehaviour
             if (quest.QuestDescription == questToMark)
             {
                 quest.isQuestComplete = false;
+                UpdateLinkedObjects(quest);
                 return;
             }
         });
