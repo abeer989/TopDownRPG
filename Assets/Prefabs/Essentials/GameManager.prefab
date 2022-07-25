@@ -56,8 +56,8 @@ MonoBehaviour:
   maxMP: 30
   strength: 15
   defence: 10
-  weaponPower: 10
-  armorPower: 10
+  weaponPower: 0
+  armorPower: 0
   equippedWeapon: {fileID: 0}
   equippedArmor: {fileID: 0}
   playerSprite: {fileID: 506618871, guid: c1db4699ec9128f41af18ab04aae681e, type: 3}
@@ -235,6 +235,9 @@ MonoBehaviour:
   switchingScenes: 0
   dialogActive: 0
   shopActive: 0
+  maxNumberOfItems: 99
+  gold: 9000
+  defaultGoldAmount: 9000
   playerStatsList:
   - {fileID: 1628051948}
   - {fileID: 7299125677198091820}
@@ -242,8 +245,17 @@ MonoBehaviour:
   itemPrefab: {fileID: 5950303223290285352, guid: 4d03dac156e66034391aaf7f3d7e4bd1, type: 3}
   itemsHeldDetails: []
   quantitiesOfItemsHeld: 
-  gold: 9000
-  maxNumberOfItems: 99
+  referenceScriptables:
+  - {fileID: 11400000, guid: ce20fe04da9514745a1be1905eee9331, type: 2}
+  - {fileID: 11400000, guid: c8209c8d40b936743bb67495be8d7e50, type: 2}
+  - {fileID: 11400000, guid: da96023b999abf944a02cb2053b38cf4, type: 2}
+  - {fileID: 11400000, guid: f4c64f0500478a44aba08282c53a5ee0, type: 2}
+  - {fileID: 11400000, guid: d7dc7af868ba3d740b4959ad003a472b, type: 2}
+  - {fileID: 11400000, guid: 0f75b9df14c1ee940a6fae1c3c4f4392, type: 2}
+  - {fileID: 11400000, guid: 5ac0a3ecdada491498442c448820cef0, type: 2}
+  - {fileID: 11400000, guid: 68a89b1d4a07653419d0ff4f862b7756, type: 2}
+  - {fileID: 11400000, guid: 74021f6c03eeec046acd9192c95f41e4, type: 2}
+  - {fileID: 11400000, guid: 94873ed02bd3f7740ae8ae42e530e900, type: 2}
 --- !u!114 &1023540315
 MonoBehaviour:
   m_ObjectHideFlags: 0

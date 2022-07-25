@@ -6,7 +6,7 @@ public class QuestManager : MonoBehaviour
     public static QuestManager instance;
 
     [SerializeField] List<Quest> quests;
-    
+
     private void Awake()
     {
         if (instance == null)
@@ -24,19 +24,26 @@ public class QuestManager : MonoBehaviour
 
     void Start()
     {
+        LoadQuestData();
         UpdateAllQuests();
     }
 
     void Update()
     {
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //    Debug.Log(CheckIfQuestComplete("test"));
+
+        //if (Input.GetKeyDown(KeyCode.M))
+        //    MarkQuestComplete("test");
+
+        //if (Input.GetKeyDown(KeyCode.K))
+        //    MarkQuestIncomplete("test");
+
         if (Input.GetKeyDown(KeyCode.Q))
-            Debug.Log(CheckIfQuestComplete("test"));        
-        
-        if (Input.GetKeyDown(KeyCode.M))
-            MarkQuestComplete("test");        
-        
-        if (Input.GetKeyDown(KeyCode.K))
-            MarkQuestIncomplete("test");
+            SaveQuestData();
+
+        if (Input.GetKeyDown(KeyCode.L))
+            LoadQuestData();
     }
 
     /// <summary>
@@ -104,7 +111,7 @@ public class QuestManager : MonoBehaviour
             {
                 if (questItem.QuestDescription == questToCheck)
                     return questItem.isQuestComplete;
-            } 
+            }
         }
 
         return false;
@@ -122,6 +129,7 @@ public class QuestManager : MonoBehaviour
             {
                 quest.isQuestComplete = true;
                 UpdateLinkedObjects(quest);
+                //SaveQuestData();
                 return;
             }
         });
@@ -135,8 +143,38 @@ public class QuestManager : MonoBehaviour
             {
                 quest.isQuestComplete = false;
                 UpdateLinkedObjects(quest);
+                //SaveQuestData();
                 return;
             }
+        });
+    }
+
+    public void SaveQuestData()
+    {
+        quests.ForEach(quest =>
+        {
+            if (quest.isQuestComplete)
+                PlayerPrefs.SetInt("quest_" + quest.QuestDescription + "_complete", 1);
+            
+            else
+                PlayerPrefs.SetInt("quest_" + quest.QuestDescription + "_complete", 0);
+        });
+    }
+
+    public void LoadQuestData()
+    {
+        quests.ForEach(quest =>
+        {
+            int valueToLoad = 0;
+
+            if (PlayerPrefs.HasKey("quest_" + quest.QuestDescription + "_complete"))
+                valueToLoad = PlayerPrefs.GetInt("quest_" + quest.QuestDescription + "_complete");
+
+            if (valueToLoad == 0)
+                quest.isQuestComplete = false;
+
+            else
+                quest.isQuestComplete = true;
         });
     }
 }

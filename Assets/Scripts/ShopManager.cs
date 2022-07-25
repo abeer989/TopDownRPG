@@ -23,6 +23,10 @@ public class ShopManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI shopGoldText;
 
     [Space]
+    [SerializeField] float messageFadeSpeed;
+    [SerializeField] float messageActiveTime;
+
+    [Space]
     [Header("BUY WINDOW")]
     [SerializeField] TextMeshProUGUI buyItemNameText;
     [SerializeField] TextMeshProUGUI buyItemDescText;
@@ -48,10 +52,6 @@ public class ShopManager : MonoBehaviour
     [SerializeField] Button sellButton;
     [SerializeField] Button cancelSellButton;
     List<ShopButton> sellButtons;
-
-    [Space]
-    [SerializeField] float messageFadeSpeed;
-    [SerializeField] float messageActiveTime;
 
     ItemScriptable selectedItem;
 
@@ -167,6 +167,10 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// This function toggles the buy actions window
+    /// </summary>
+    /// <param name="state"></param>
     void ToggleBuyActionWindow(bool state)
     {
         buyValueText.gameObject.SetActive(state);
@@ -174,6 +178,7 @@ public class ShopManager : MonoBehaviour
         buyButton.gameObject.SetActive(state);
         cancelBuyButton.gameObject.SetActive(state);
     }
+
 
     IEnumerator ShowBuyMessageCR(string itemName = "", int itemQuantity = 0, bool notEnoughGold = false)
     {
@@ -387,7 +392,7 @@ public class ShopManager : MonoBehaviour
             {
                 GameManager.instance.Gold += totalPrice;
                 shopGoldText.SetText(GameManager.instance.Gold.ToString() + "g");
-                GameManager.instance.DiscardItemFromInventory(itemToDeleteDetails: selectedItem, quantitityToDelete: sellQuantity, calledFromUseOrShop: true);
+                GameManager.instance.DiscardItemFromInventory(itemToDeleteDetails: selectedItem, quantitityToDelete: sellQuantity, dropItem: false);
                 StartCoroutine(ShowSellMessageCR(itemName: selectedItem.ItemName, itemQuantity: sellQuantity));
 
                 CloseSellActionWindow();

@@ -21,10 +21,10 @@ public class PlayerStats : MonoBehaviour
     public int weaponPower;
     public int armorPower;
 
-    // equipped wpn and armr have been set to be ItemDetailsHolder type objects
+    // equipped wpn and armr have been set to be ItemScriptable type objects
     // because in the GameManager.UseItemInInvetory() func., there's a check that sees if a wpn/armr
     // is already equipped, it'll be added back to the inventory using the GameManager.AddItemToInventory() function
-    // that requires a ItemDetailsHolder type argument:
+    // that requires a ItemScriptable type argument:
     public ItemScriptable equippedWeapon;
     public ItemScriptable equippedArmor;
 

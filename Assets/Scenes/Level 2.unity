@@ -233,15 +233,75 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[1].isQuestComplete
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[2].isQuestComplete
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[4].isQuestComplete
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
       propertyPath: quests.Array.data[0].questDescription
       value: test
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[1].questDescription
+      value: test2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[2].questDescription
+      value: test3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[3].questDescription
+      value: test4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[4].questDescription
+      value: test5
       objectReference: {fileID: 0}
     - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
       propertyPath: quests.Array.data[0].linkedObjects.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[1].linkedObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[2].linkedObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[3].linkedObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[4].linkedObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
       propertyPath: quests.Array.data[0].linkedObjects.Array.data[0]
+      value: 
+      objectReference: {fileID: 943542720}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[1].linkedObjects.Array.data[0]
+      value: 
+      objectReference: {fileID: 943542720}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[2].linkedObjects.Array.data[0]
+      value: 
+      objectReference: {fileID: 943542720}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[3].linkedObjects.Array.data[0]
+      value: 
+      objectReference: {fileID: 943542720}
+    - target: {fileID: 1023540315, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
+      propertyPath: quests.Array.data[4].linkedObjects.Array.data[0]
       value: 
       objectReference: {fileID: 943542720}
     - target: {fileID: 182548356597634215, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
@@ -28951,7 +29011,7 @@ GameObject:
   m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1615880512
 MonoBehaviour:
   m_ObjectHideFlags: 0

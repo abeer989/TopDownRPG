@@ -61,6 +61,10 @@ public class Item : MonoBehaviour
         Destroy(gameObject, .5f);
     }
 
+    /// <summary>
+    /// function for setting up an item when instantiating from anothe script:
+    /// </summary>
+    /// <param name="reference"></param>
     public void SetUpItem(ItemScriptable reference)
     {
         if (reference)

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Variables/Ref.
     public static PlayerController instance;
 
     [Header("Components")]
@@ -50,7 +51,8 @@ public class PlayerController : MonoBehaviour
             if (instance != this)
                 Destroy(gameObject);
         }
-    }
+    } 
+    #endregion
 
     void Update()
     {
@@ -83,5 +85,9 @@ public class PlayerController : MonoBehaviour
         #endregion
     }
 
+    /// <summary>
+    /// set bounds for player according to the camera bounds:
+    /// </summary>
+    /// <param name="_boundsBox"></param>
     public void SetBounds(BoxCollider2D _boundsBox) => playerBoundsBox = _boundsBox;
 }

@@ -6,12 +6,18 @@ using System.Collections.Generic;
 
 public class UIController : MonoBehaviour
 {
+    #region Variables/Ref.
     public static UIController instance;
 
     [SerializeField] Image fadeImage;
     [SerializeField] float fadeSpeed;
     [SerializeField] GameObject menuPanel;
+    [SerializeField] TextMeshProUGUI gameSavedText;
     [SerializeField] TextMeshProUGUI goldAmountText;
+
+    [Space]
+    [SerializeField] float messagTextFadeSpeed;
+    [SerializeField] float messageTextActiveTime;
 
     [Space]
     [SerializeField] GameObject[] menuWindows;
@@ -55,10 +61,6 @@ public class UIController : MonoBehaviour
     [SerializeField] Button discardButton;
 
     [Space]
-    [SerializeField] float returnTextActiveTime;
-    [SerializeField] float returnTextFadeSpeed;
-
-    [Space]
     [SerializeField] TextMeshProUGUI returnMessageText;
     [SerializeField] TextMeshProUGUI useOrEquipButtonText;
     [SerializeField] TextMeshProUGUI itemWindowNameText;
@@ -75,7 +77,9 @@ public class UIController : MonoBehaviour
 
     bool shouldFadeToBlack;
     bool shouldFadeFromBlack;
+    #endregion
 
+    #region Unity Func.
     private void Awake()
     {
         if (instance == null)
@@ -100,17 +104,18 @@ public class UIController : MonoBehaviour
         itemWindowNameText.SetText(string.Empty);
         returnMessageText.SetText(string.Empty);
         AssignListenersToButtons();
-    }
+    } 
 
     private void Update()
     {
+        // toggling menu:
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (!menuPanel.activeInHierarchy && !GameManager.instance.shopActive && !GameManager.instance.dialogActive && !GameManager.instance.switchingScenes)
             {
                 menuPanel.SetActive(true);
                 Time.timeScale = 0;
-                UpdateStats();
+                UpdateInfoHolderStats();
                 GameManager.instance.gameMenuOpen = true;
             }
 
@@ -118,13 +123,15 @@ public class UIController : MonoBehaviour
                 CloseMenu();
         }        
         
+        // toggling the items/inventory screen directly
+        // without having to open the menu first:
         if (Input.GetKeyDown(KeyCode.I))
         {
             if (!menuPanel.activeInHierarchy && !GameManager.instance.shopActive && !GameManager.instance.dialogActive && !GameManager.instance.switchingScenes)
             {
                 menuPanel.SetActive(true);
                 Time.timeScale = 0;
-                UpdateStats();
+                UpdateInfoHolderStats();
                 ToggleWindow(0);
                 GameManager.instance.gameMenuOpen = true;
             }
@@ -133,6 +140,7 @@ public class UIController : MonoBehaviour
                 ToggleWindow(0);
         }
 
+        // fading screen to/from black:
         if (shouldFadeToBlack)
         {
             fadeImage.color = new Color(r: fadeImage.color.r, g: fadeImage.color.g, b: fadeImage.color.b,
@@ -151,7 +159,11 @@ public class UIController : MonoBehaviour
                 shouldFadeFromBlack = false;
         }
     }
+    #endregion
 
+    /// <summary>
+    /// assign functions to relevant buttons:
+    /// </summary>
     void AssignListenersToButtons()
     {
         discardButton.onClick.RemoveAllListeners();
@@ -165,11 +177,18 @@ public class UIController : MonoBehaviour
         useOrEquipP3Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 2, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
     }
 
+    /// <summary>
+    /// whenever an inventory item is created, create/update relevant buttons on the UI
+    /// to reflect them properly:
+    /// </summary>
+    /// <param name="itemDetailsOnButton"></param>
+    /// <param name="quantityOnButton"></param>
     public void CreateOrUpdateCorrespondingInventoryButton(ItemScriptable itemDetailsOnButton, int quantityOnButton)
     {
         bool buttonAlreadyInList = false;
         int buttonIndex = 0;
 
+        // check to see if the button for the item already exists in the list here:
         if (itemButtons.Count > 0)
         {
             foreach (ItemButton itemButton in itemButtons)
@@ -183,6 +202,7 @@ public class UIController : MonoBehaviour
             }
         }
 
+        // if it doesn't, assign the relevant sprite, quantity and details of the item associated: 
         if (!buttonAlreadyInList)
         {
             GameObject button = Instantiate(itemButtonPrefab, itemsParent);
@@ -198,10 +218,17 @@ public class UIController : MonoBehaviour
             itemButtons.Add(itemButtonComp);
         }
 
+        // else, just increment the quantity on the button, because it already exists in the list:
         else
             itemButtons[buttonIndex].ItemQuantity.SetText(quantityOnButton.ToString());
     }
 
+    /// <summary>
+    /// whenever an inventory item is removed, delete/update relevant buttons on the UI
+    /// to reflect them properly:
+    /// </summary>
+    /// <param name="buttonToDelete"></param>
+    /// <param name="quantityToDeleteOnButton"></param>
     public void DeleteCorrespondingInventoryButton(string buttonToDelete, int quantityToDeleteOnButton)
     {
         int buttonIndex = 0;
@@ -235,7 +262,10 @@ public class UIController : MonoBehaviour
             buttonUC.ItemQuantity.SetText(quantityToDeleteOnButton.ToString());
     }
 
-    void UpdateStats()
+    /// <summary>
+    /// update player stats and reflect them on the main menu screen (char. info. holder boxes) properly:
+    /// </summary>
+    void UpdateInfoHolderStats()
     {
         // copying over the playerStatsList from the GameManager which is a list of
         // the PlayerStats components attached to the diff. characters in-game: 
@@ -271,37 +301,54 @@ public class UIController : MonoBehaviour
             }
         }
 
+        // reflect gold on UI:
         goldAmountText.SetText(GameManager.instance.Gold.ToString() + "g");
     }
 
+    /// <summary>
+    /// set the selected item that is to be used or equipped from the items menu:
+    /// </summary>
+    /// <param name="itemDetails"></param>
     public void SelectItem(ItemScriptable itemDetails)
     {
+        CloseUseForWindow();
+
         selectedItemDetails = itemDetails;
         itemWindowNameText.SetText(itemDetails.ItemName);
         itemWindowDescText.SetText(itemDetails.Description);
 
+        // show the use & discard buttons only when an item is selected:
         useForWindowButton.gameObject.SetActive(true);
         discardButton.gameObject.SetActive(true);
 
+        // if the item is a consumable, change the use button's text to "USE":
         if (selectedItemDetails.ItemType != Item.ItemType.weapon && selectedItemDetails.ItemType != Item.ItemType.armor)
             useOrEquipButtonText.SetText("USE");
 
+        // else if the item is a weapon/armor piece, change the use button's text to "EQUIP":
         else
             useOrEquipButtonText.SetText("EQUIP");
     }
 
+    /// <summary>
+    /// clear selected item:
+    /// </summary>
     public void ClearSelectedItem()
     {
         selectedItemDetails = null;
         itemWindowNameText.SetText(string.Empty);
         itemWindowDescText.SetText(string.Empty);
 
+        // don't show the use & discard buttons when selected item is cleared:
         useForWindowButton.gameObject.SetActive(false);
         discardButton.gameObject.SetActive(false);
     }
 
-    // function to update the values in the stats window.
-    // This function will update values in the stats window from the stats array:
+    /// <summary>
+    /// Function to update the values in the stats window.
+    /// This function will update values in the stats window from the stats array:
+    /// </summary>
+    /// <param name="statsIndex"></param>
     public void ShowCharacterStats(int statsIndex = 0)
     {
         if (stats.Length > 0)
@@ -346,9 +393,15 @@ public class UIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// toggle b/w items and stats windows:
+    /// [0] => items window
+    /// [1] => stats window
+    /// </summary>
+    /// <param name="windowIndex"></param>
     public void ToggleWindow(int windowIndex)
     {
-        UpdateStats();
+        UpdateInfoHolderStats();
         CloseUseForWindow();
 
         for (int i = 0; i < menuWindows.Length; i++)
@@ -361,26 +414,37 @@ public class UIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// opens the "Use For?" window that lets you use and item on a spec. character:
+    /// </summary>
     public void OpenUseForWindow()
     {
-        if (!string.IsNullOrEmpty(selectedItemDetails.ItemName))
+        if (selectedItemDetails)
         {
             useForWindow.SetActive(true);
 
             for (int i = 0; i < useForWindowButtonLabels.Count; i++)
             {
+                // the "Use For?" window has buttons that apply the selected item's effect on the corresponding player/
+                // Here, we're setting those buttons' texts to show corresponding player names:
                 useForWindowButtonLabels[i].SetText(GameManager.instance.PlayerStatsList[i].characterName);
                 useForWindowButtonLabels[i].transform.parent.gameObject.SetActive(GameManager.instance.PlayerStatsList[i].gameObject.activeInHierarchy);
             } 
         }
-    }    
-    
+    }
+
+    /// <summary>
+    /// Close the "Use For?" window and clear the selected item:
+    /// </summary>
     public void CloseUseForWindow()
     {
         useForWindow.SetActive(false);
         ClearSelectedItem();
     }
 
+    /// <summary>
+    /// Close main menu:
+    /// </summary>
     public void CloseMenu()
     {
         foreach (GameObject window in menuWindows) window.SetActive(false);
@@ -390,6 +454,20 @@ public class UIController : MonoBehaviour
         GameManager.instance.gameMenuOpen = false;
     }
 
+    /// <summary>
+    /// save player data, quest data and show the "Game Saved!" msg.:
+    /// </summary>
+    public void SaveGame()
+    {
+        GameManager.instance.SavePlayerData();
+        QuestManager.instance.SaveQuestData();
+        PlayerPrefs.Save();
+        CallGameSavedMessageCR();
+    }
+
+    /// <summary>
+    /// bool setter functions that enable the fade in/out func when switching b/w scenes:
+    /// </summary>
     public void FadeToBlack()
     {
         shouldFadeToBlack = true;
@@ -402,27 +480,45 @@ public class UIController : MonoBehaviour
         shouldFadeToBlack = false;
     }
 
-    public void CallShowReturnMessageCR(string message) => StartCoroutine(ShowReturnMessageCR(message));
-
-    IEnumerator ShowReturnMessageCR(string message)
+    /// <summary>
+    /// shows a message when an a weapon is equipped and the already equipped weapon
+    /// is returned to the inventory (only for weapons/armor):
+    /// </summary>
+    /// <param name="itemName"></param>
+    public void CallShowReturnMessageCR(string itemName)
     {
-        returnMessageText.SetText("Equipped " + message + " has been returned to inventory.");
+        string message = "Equipped " + itemName + " has been returned to inventory.";
+        StartCoroutine(ShowMessageCR(returnMessageText, message));
+    }
 
-        while (returnMessageText.color.a < 1)
+    /// <summary>
+    /// shows a message when game is saved:
+    /// </summary>
+    public void CallGameSavedMessageCR() => StartCoroutine(ShowMessageCR(gameSavedText));
+
+    /// <summary>
+    /// generic coroutine for fading in/out a TextMeshProUGUI text oject:
+    /// </summary>
+    IEnumerator ShowMessageCR(TextMeshProUGUI text, string _message = "")
+    {
+        if (!string.IsNullOrEmpty(_message))
+            text.SetText(_message); 
+
+        while (text.color.a < 1)
         {
-            returnMessageText.color = new Color(returnMessageText.color.r, returnMessageText.color.g, returnMessageText.color.b, Mathf.MoveTowards(returnMessageText.color.a, 1, Time.unscaledDeltaTime * returnTextFadeSpeed));
+            text.color = new Color(text.color.r, text.color.g, text.color.b, Mathf.MoveTowards(text.color.a, 1, Time.unscaledDeltaTime * messagTextFadeSpeed));
             yield return null;
         }
 
-        while (returnMessageText.color.a == 1)
+        while (text.color.a == 1)
         {
-            yield return new WaitForSecondsRealtime(returnTextActiveTime);
+            yield return new WaitForSecondsRealtime(messageTextActiveTime);
             break;
         }
 
-        while (returnMessageText.color.a > 0)
+        while (text.color.a > 0)
         {
-            returnMessageText.color = new Color(returnMessageText.color.r, returnMessageText.color.g, returnMessageText.color.b, Mathf.MoveTowards(returnMessageText.color.a, 0, Time.unscaledDeltaTime * returnTextFadeSpeed));
+            text.color = new Color(text.color.r, text.color.g, text.color.b, Mathf.MoveTowards(text.color.a, 0, Time.unscaledDeltaTime * messagTextFadeSpeed));
             yield return null;
         }
         
