@@ -11,7 +11,7 @@ public class LoadManager : MonoBehaviour
 
     IEnumerator LoadCR()
     {
-        //yield return new WaitForSecondsRealtime(loadTime);
+        yield return new WaitForSecondsRealtime(loadTime);
 
         if (PlayerPrefs.HasKey("current_scene_index"))
         {
@@ -19,18 +19,8 @@ public class LoadManager : MonoBehaviour
 
             SceneManager.LoadScene(sceneIndex);
 
-            bool a() => GameManager.instance != null;
-            yield return new WaitUntil(a);
-
-            //if (GameManager.instance != null)
-            //{
-            Debug.Log(GameManager.instance.name);
-                GameManager.instance.LoadPlayerData();
-                QuestManager.instance.LoadQuestData(); 
-            //}
+            GameManager.instance.LoadPlayerData();
+            QuestManager.instance.LoadQuestData();
         }
-
-        else
-            yield return new WaitForSecondsRealtime(loadTime);
     }
 }
