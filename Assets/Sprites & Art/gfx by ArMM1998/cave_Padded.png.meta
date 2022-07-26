@@ -2910,8 +2910,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      cave_Padded_14: 21300028
       cave_Padded_93: 21300186
+      cave_Padded_67: 21300134
       cave_Padded_64: 21300128
       cave_Padded_104: 21300208
       cave_Padded_100: 21300200
@@ -3026,7 +3026,7 @@ TextureImporter:
       cave_Padded_69: 21300138
       cave_Padded_85: 21300170
       cave_Padded_72: 21300144
-      cave_Padded_67: 21300134
+      cave_Padded_14: 21300028
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

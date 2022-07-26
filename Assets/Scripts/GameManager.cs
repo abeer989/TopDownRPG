@@ -170,6 +170,8 @@ public class GameManager : MonoBehaviour
     /// <param name="quantityToUse"></param>
     public void UseItemInInvetory(int charToUseOnIndex, ItemScriptable itemToUseDetails, int quantityToUse)
     {
+        AudioManager.instance.PlaySFX(sfxIndex: 7, adjust: true);
+
         // caching selectedCharacter using the charToUseOnIndex arg.:
         PlayerStats selectedCharacter = playerStatsList[charToUseOnIndex];
 

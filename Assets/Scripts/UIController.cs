@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class UIController : MonoBehaviour
 {
@@ -18,6 +19,9 @@ public class UIController : MonoBehaviour
     [Space]
     [SerializeField] float messagTextFadeSpeed;
     [SerializeField] float messageTextActiveTime;
+
+    [Space]
+    [SerializeField] int mainMenuSceneIndex;
 
     [Space]
     [SerializeField] GameObject[] menuWindows;
@@ -121,6 +125,8 @@ public class UIController : MonoBehaviour
 
             else if (menuPanel.activeInHierarchy)
                 CloseMenu();
+
+            AudioManager.instance.PlaySFX(5); // play menu SFX
         }        
         
         // toggling the items/inventory screen directly
@@ -160,6 +166,26 @@ public class UIController : MonoBehaviour
         }
     }
     #endregion
+
+    public void MainMenu()
+    {
+
+        Destroy(PlayerController.instance.gameObject);
+        PlayerController.instance = null;
+        
+        Destroy(GameManager.instance.gameObject);
+        GameManager.instance = null;
+        
+        Destroy(AudioManager.instance.gameObject);
+        AudioManager.instance = null;
+
+        SceneManager.LoadScene(mainMenuSceneIndex);
+
+        Destroy(gameObject);
+        instance = null;
+    }
+
+    public void PlayButtonSFX() => AudioManager.instance.PlaySFX(4);
 
     /// <summary>
     /// assign functions to relevant buttons:

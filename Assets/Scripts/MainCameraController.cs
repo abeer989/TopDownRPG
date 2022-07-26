@@ -9,6 +9,10 @@ public class MainCameraController : MonoBehaviour
     float halfHeight;
     float halfWidth;
 
+    // playing audio for the scene:
+    [Space]
+    [SerializeField] int musicIndex;
+
     private void Awake()
     {
         cameraBoundsBox.gameObject.transform.SetParent(transform.parent);
@@ -18,6 +22,8 @@ public class MainCameraController : MonoBehaviour
 
     private void Start()
     {
+        AudioManager.instance.PlayMusic(musicIndex);
+
         // calculating halfWidth and halfHeight to keep the camera's whole FOV within bounds:
         halfHeight = Camera.main.orthographicSize;
         halfWidth = halfHeight * Camera.main.aspect;
@@ -31,6 +37,9 @@ public class MainCameraController : MonoBehaviour
                                              z: transform.position.z);
 
         else
-            player = PlayerController.instance.transform;
+        {
+            if(PlayerController.instance != null)  
+                player = PlayerController.instance.transform;
+        }
     }
 }

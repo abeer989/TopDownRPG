@@ -6415,7 +6415,7 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       Inner_Padded_22: 21300044
-      Inner_Padded_218: 21300436
+      Inner_Padded_52: 21300104
       Inner_Padded_95: 21300190
       Inner_Padded_103: 21300206
       Inner_Padded_253: 21300506
@@ -6446,9 +6446,9 @@ TextureImporter:
       Inner_Padded_68: 21300136
       Inner_Padded_21: 21300042
       Inner_Padded_221: 21300442
-      Inner_Padded_79: 21300158
       Inner_Padded_152: 21300304
       Inner_Padded_59: 21300118
+      Inner_Padded_79: 21300158
       Inner_Padded_31: 21300062
       Inner_Padded_129: 21300258
       Inner_Padded_57: 21300114
@@ -6493,8 +6493,9 @@ TextureImporter:
       Inner_Padded_12: 21300024
       Inner_Padded_11: 21300022
       Inner_Padded_1: 21300002
-      Inner_Padded_41: 21300082
       Inner_Padded_147: 21300294
+      Inner_Padded_41: 21300082
+      Inner_Padded_190: 21300380
       Inner_Padded_111: 21300222
       Inner_Padded_39: 21300078
       Inner_Padded_30: 21300060
@@ -6502,7 +6503,6 @@ TextureImporter:
       Inner_Padded_42: 21300084
       Inner_Padded_100: 21300200
       Inner_Padded_232: 21300464
-      Inner_Padded_190: 21300380
       Inner_Padded_156: 21300312
       Inner_Padded_89: 21300178
       Inner_Padded_115: 21300230
@@ -6573,8 +6573,8 @@ TextureImporter:
       Inner_Padded_8: 21300016
       Inner_Padded_171: 21300342
       Inner_Padded_131: 21300262
-      Inner_Padded_211: 21300422
       Inner_Padded_223: 21300446
+      Inner_Padded_211: 21300422
       Inner_Padded_153: 21300306
       Inner_Padded_178: 21300356
       Inner_Padded_217: 21300434
@@ -6676,7 +6676,7 @@ TextureImporter:
       Inner_Padded_0: 21300000
       Inner_Padded_177: 21300354
       Inner_Padded_214: 21300428
-      Inner_Padded_52: 21300104
+      Inner_Padded_218: 21300436
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

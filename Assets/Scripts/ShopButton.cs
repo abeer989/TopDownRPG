@@ -8,5 +8,7 @@ public class ShopButton : MonoBehaviour
     public TextMeshProUGUI ItemQuantity;
     public ItemScriptable ItemDetails;
 
+    private void OnEnable() => GetComponent<Button>().onClick.AddListener(UIController.instance.PlayButtonSFX);
+
     public void OnItemButtonPressed() => ShopManager.instance.SelectItem(item: ItemDetails);
 }

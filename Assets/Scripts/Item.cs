@@ -32,6 +32,7 @@ public class Item : MonoBehaviour
     {
         if (canPickup && Input.GetKeyDown(key: KeyCode.E) && PlayerController.instance.CanMove)
         {
+            AudioManager.instance.PlaySFX(6);
             GameManager.instance.AddItemToInventory(itemToAddDetails: referenceScriptableObject, itemQuantity: 1);
             Destroy(); 
         }
