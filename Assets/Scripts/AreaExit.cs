@@ -15,6 +15,7 @@ public class AreaExit : MonoBehaviour
 
     private void OnEnable()
     {
+        gameObject.name = exitName;
         player = PlayerController.instance;
         areaEntrance.SetCorrespondingExitName(exitName);
     }
