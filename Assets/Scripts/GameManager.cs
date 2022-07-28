@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     #region Variables/Ref.
     public static GameManager instance;
 
-    [HideInInspector] public bool gameMenuOpen, switchingScenes, dialogActive, shopActive;
+    [HideInInspector] public bool gameMenuOpen, switchingScenes, dialogActive, shopActive, battleActive;
 
     [SerializeField] int maxNumberOfItems = 99;
     [SerializeField] int gold;
@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (gameMenuOpen || switchingScenes || dialogActive || shopActive)
+        if (gameMenuOpen || switchingScenes || dialogActive || shopActive || battleActive)
             PlayerController.instance.CanMove = false;
 
         else
