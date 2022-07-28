@@ -12,18 +12,30 @@ public class BattleCharacter : MonoBehaviour
     [Space]
     [SerializeField] bool isDead;
 
+    // public properties:
     public BattleCharacterType CharacterType { get { return characterType; } }
     public string CharacterName { get { return characterName; } }
+    public string[] MovesAvailable { get { return movesAvailable; } }
 
     public int CurrentHP
     {
         get { return currentHP; } 
         set { currentHP = value; }
+    }    
+    
+    public int MaxHP { get { return maxHP; } }
+
+    public int CurrentMP
+    {
+        get { return currentMP; }
+        set { currentMP = value; }
     }
 
-    public int MaxHP { get { return MaxHP; } }
-    public int CurrentMP { get { return currentMP; } }
     public int MaxMP { get { return maxMP; } }
+    public int Str { get { return str; } }
+    public int Def { get { return def; } }
+    public int WpnPower { get { return wpnPower; } }
+    public int ArmrPower { get { return armrPower; } }
 
     public enum BattleCharacterType
     {

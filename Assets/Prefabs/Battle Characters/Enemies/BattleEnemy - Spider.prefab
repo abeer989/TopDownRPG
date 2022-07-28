@@ -99,11 +99,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterType: 1
   characterName: Spider
-  movesAvailable: []
+  movesAvailable:
+  - plasma
+  - freeze
+  - flame
   currentHP: 100
   maxHP: 100
-  currentMP: 0
-  maxMP: 0
+  currentMP: 50
+  maxMP: 50
   str: 5
   def: 5
   wpnPower: 5

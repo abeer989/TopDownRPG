@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class BattleManager : MonoBehaviour
 {
@@ -10,13 +11,18 @@ public class BattleManager : MonoBehaviour
     [SerializeField] GameObject actionsMenu;
 
     [Space]
+    [SerializeField] TextMeshProUGUI playerAttackText;
+    [SerializeField] TextMeshProUGUI enemyAttackText;
+
+    [Space]
     [SerializeField] List<BattleCharacter> playerPrefabs;
     [SerializeField] List<BattleCharacter> enemyPrefabs;
     [SerializeField] List<Transform> playerPositions;
     [SerializeField] List<Transform> enemyPositions;
 
     [Space]
-    [SerializeField] List<GameObject> FX;
+    [SerializeField] List<BattleMove> moveList;
+    //[SerializeField] List<GameObject> FX;
 
     [Space]
     [SerializeField] List<BattleCharacter> activeBattleCharacters;
@@ -201,8 +207,58 @@ public class BattleManager : MonoBehaviour
 
         // now that we have the player indices, we select a reandom one and take away x amount of HP from them:
         int targetIndex = playerIndices[Random.Range(0, playerIndices.Count)];
-        activeBattleCharacters[targetIndex].CurrentHP -= 30;
-        Instantiate(FX[0], activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity);
+
+        // choose a random attack (string -- name of attack) from the activeBC's movesAvailable list:
+        int attackIndex = Random.Range(0, activeBattleCharacters[currentTurn].MovesAvailable.Length);
+
+        // cache:
+        BattleMove selectedMove = null;
+
+        // loop through the moveList and check if an attack of the same name exists in there
+        if (activeBattleCharacters[currentTurn].MovesAvailable.Length > 0)
+        {
+            for (int i = 0; i < moveList.Count; i++)
+            {
+                // if it doesn, cache it in the selectedAttack var:
+                if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[attackIndex].Trim()))
+                {
+                    selectedMove = moveList[i];
+                    //break;
+                }
+            }
+        }
+
+        else
+            Debug.LogError("NO MOVES AVAILABLE FOR: " + activeBattleCharacters[currentTurn].CharacterName);
+
+        if (selectedMove != null)
+        {
+            // inflict status effects from that selectedAttack:
+            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MovePower); // apply damage to targeted player
+            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
+            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
+
+            string msg = activeBattleCharacters[currentTurn].CharacterName
+                         + " used "
+                         + selectedMove.MoveName
+                         + " on "
+                         + activeBattleCharacters[targetIndex].CharacterName
+                         + ".";
+
+            StartCoroutine(ShowAttackTextCR(text: enemyAttackText, _msg: msg, activeTime: 2));
+        }
+    }
+
+    int DealDamage(int _targetIndex, int movePower)
+    {
+        float attackPower = activeBattleCharacters[currentTurn].Str + activeBattleCharacters[currentTurn].WpnPower;
+        float targetDefense = activeBattleCharacters[_targetIndex].Def + activeBattleCharacters[_targetIndex].ArmrPower;
+
+        int damage = Mathf.RoundToInt((attackPower / targetDefense) * movePower * Random.Range(.9f, 1.1f));
+
+        Debug.Log(activeBattleCharacters[currentTurn] + " dealt " + damage + " damage to " + activeBattleCharacters[_targetIndex]);
+
+        return damage;
     }
 
     IEnumerator EnemyAttackDelayCR()
@@ -210,8 +266,19 @@ public class BattleManager : MonoBehaviour
         waitingForNextTurn = false;
         yield return new WaitForSeconds(1);
         EnemyAttack();
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         StartNextTurn();
+
+        yield break;
+    }
+
+    IEnumerator ShowAttackTextCR(TextMeshProUGUI text, string _msg, float activeTime = 1)
+    {
+        text.text = _msg;
+
+        text.gameObject.SetActive(true);
+        yield return new WaitForSeconds(activeTime);
+        text.gameObject.SetActive(false);
 
         yield break;
     }

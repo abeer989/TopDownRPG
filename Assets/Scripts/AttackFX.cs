@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DestroyOverTime : MonoBehaviour
+public class AttackFX : MonoBehaviour
 {
     [SerializeField] bool playSFX;
 
