@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class BattleCharacter : MonoBehaviour
 {
+    [SerializeField] GameObject attackIndicatorCanvasPrefab;
+
     [SerializeField] BattleCharacterType characterType;
     [SerializeField] string characterName;
 
@@ -43,6 +45,17 @@ public class BattleCharacter : MonoBehaviour
         enemy
     }
 
+    GameObject attackIndicatorCanvas;
+
+    private void OnEnable()
+    {
+        if (attackIndicatorCanvasPrefab)
+        {
+            attackIndicatorCanvas = Instantiate(attackIndicatorCanvasPrefab, transform);
+            //attackIndicatorCanvasPrefab.transform.SetParent(transform); 
+        }
+    }
+
     public void SetUpBattleCharacter(PlayerStats _stats, string[] _movesAvailable, bool _isDead = false)
     {
         characterName = _stats.characterName;
@@ -56,5 +69,11 @@ public class BattleCharacter : MonoBehaviour
         wpnPower = _stats.weaponPower;
         armrPower = _stats.armorPower;
         isDead = _isDead;
+    }
+
+    public void ToggleAttackCanvas(bool state)
+    {
+        if(attackIndicatorCanvas != null)
+            attackIndicatorCanvas.SetActive(state);
     }
 }

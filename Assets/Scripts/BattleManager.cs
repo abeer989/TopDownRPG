@@ -1,7 +1,7 @@
+using TMPro;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 
 public class BattleManager : MonoBehaviour
 {
@@ -11,18 +11,29 @@ public class BattleManager : MonoBehaviour
     [SerializeField] GameObject actionsMenu;
 
     [Space]
-    [SerializeField] TextMeshProUGUI playerAttackText;
-    [SerializeField] TextMeshProUGUI enemyAttackText;
+    [SerializeField] ShowDamageNumbers damageNumberCanvas;
 
     [Space]
+    [Header("Attack Message Texts")]
+    [SerializeField] TextMeshProUGUI playerAttackText;
+    [SerializeField] TextMeshProUGUI enemyAttackText;    
+    
+    [Header("Stats UI Texts")]
+    [SerializeField] List<TextMeshProUGUI> playerNameTexts;
+    [SerializeField] List<TextMeshProUGUI> playerHPTexts;
+    [SerializeField] List<TextMeshProUGUI> playerMPTexts;
+
+    [Header("Prefabs")]
     [SerializeField] List<BattleCharacter> playerPrefabs;
     [SerializeField] List<BattleCharacter> enemyPrefabs;
+
+    [Header("Positions")]
     [SerializeField] List<Transform> playerPositions;
     [SerializeField] List<Transform> enemyPositions;
 
     [Space]
     [SerializeField] List<BattleMove> moveList;
-    //[SerializeField] List<GameObject> FX;
+    [SerializeField] List<GameObject> FX;
 
     [Space]
     [SerializeField] List<BattleCharacter> activeBattleCharacters;
@@ -127,6 +138,37 @@ public class BattleManager : MonoBehaviour
                     }
                 }
             }
+
+            UpdateUIStats();
+        }
+    }
+
+    /// <summary>
+    /// this function will update player stats on the battle UI after every turn.
+    /// </summary>
+    public void UpdateUIStats()
+    {
+        // loop through playerNameTexts list:
+        for (int i = 0; i < playerNameTexts.Count; i++)
+        {
+            if (i < activeBattleCharacters.Count)
+            {
+                if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.player)
+                {
+                    BattleCharacter playerData = activeBattleCharacters[i];
+
+                    playerNameTexts[i].gameObject.SetActive(true);
+                    playerNameTexts[i].SetText(playerData.CharacterName);
+                    playerHPTexts[i].SetText(Mathf.Clamp(playerData.CurrentHP, 0, int.MaxValue) + "/" + playerData.MaxHP);
+                    playerMPTexts[i].SetText(Mathf.Clamp(playerData.CurrentMP, 0, int.MaxValue) + "/" + playerData.MaxMP);
+                }
+
+                else
+                    playerNameTexts[i].gameObject.SetActive(false);
+            }
+
+            else
+                playerNameTexts[i].gameObject.SetActive(false);
         }
     }
 
@@ -144,6 +186,7 @@ public class BattleManager : MonoBehaviour
         waitingForNextTurn = true;
 
         UpdateBattle();
+        UpdateUIStats();
     }
 
     /// <summary>
@@ -223,7 +266,7 @@ public class BattleManager : MonoBehaviour
                 if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[attackIndex].Trim()))
                 {
                     selectedMove = moveList[i];
-                    //break;
+                    break;
                 }
             }
         }
@@ -231,10 +274,11 @@ public class BattleManager : MonoBehaviour
         else
             Debug.LogError("NO MOVES AVAILABLE FOR: " + activeBattleCharacters[currentTurn].CharacterName);
 
+        //Debug.LogError(selectedMove);
         if (selectedMove != null)
         {
             // inflict status effects from that selectedAttack:
-            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MovePower); // apply damage to targeted player
+            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
             activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
             Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
 
@@ -245,6 +289,8 @@ public class BattleManager : MonoBehaviour
                          + activeBattleCharacters[targetIndex].CharacterName
                          + ".";
 
+            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
+            UpdateUIStats();
             StartCoroutine(ShowAttackTextCR(text: enemyAttackText, _msg: msg, activeTime: 2));
         }
     }
@@ -253,10 +299,11 @@ public class BattleManager : MonoBehaviour
     {
         float attackPower = activeBattleCharacters[currentTurn].Str + activeBattleCharacters[currentTurn].WpnPower;
         float targetDefense = activeBattleCharacters[_targetIndex].Def + activeBattleCharacters[_targetIndex].ArmrPower;
-
         int damage = Mathf.RoundToInt((attackPower / targetDefense) * movePower * Random.Range(.9f, 1.1f));
 
         Debug.Log(activeBattleCharacters[currentTurn] + " dealt " + damage + " damage to " + activeBattleCharacters[_targetIndex]);
+        Instantiate(damageNumberCanvas, activeBattleCharacters[_targetIndex].transform.position, activeBattleCharacters[_targetIndex].transform.rotation).SetDamageValue(damage);
+        UpdateUIStats();
 
         return damage;
     }
