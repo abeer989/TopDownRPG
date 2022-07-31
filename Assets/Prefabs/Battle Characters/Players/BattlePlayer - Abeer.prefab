@@ -97,10 +97,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 419fd47487758f642a8d7a81ea53fe8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackIndicatorCanvasPrefab: {fileID: 0}
   characterType: 0
   characterName: Abeer
   movesAvailable: []
-  currentHP: 0
+  currentHP: 100
   maxHP: 0
   currentMP: 0
   maxMP: 0

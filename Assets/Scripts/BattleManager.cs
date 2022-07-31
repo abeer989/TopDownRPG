@@ -77,6 +77,9 @@ public class BattleManager : MonoBehaviour
                 if (activeBattleCharacters[currentTurn].CharacterType == BattleCharacter.BattleCharacterType.player)
                 {
                     actionsMenu.SetActive(true);
+
+                    if(Input.GetKeyDown(key: KeyCode.V))
+                        PlayerAttack("flame", 3);
                 }
 
                 else
@@ -195,8 +198,8 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     void UpdateBattle()
     {
-        bool allEnemiesDead = false;
-        bool allPlayersDead = false;
+        bool allEnemiesDead = true;
+        bool allPlayersDead = true;
 
         for (int i = 0; i < activeBattleCharacters.Count; i++)
         {
@@ -216,21 +219,34 @@ public class BattleManager : MonoBehaviour
                 else if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.enemy)
                     allEnemiesDead = false;
             }
+        }
 
-            if (allEnemiesDead || allPlayersDead)
+        if (allEnemiesDead || allPlayersDead)
+        {
+            battleScene.gameObject.SetActive(false);
+            GameManager.instance.battleActive = false;
+
+            if (allPlayersDead)
             {
-                battleScene.gameObject.SetActive(false);
-                GameManager.instance.battleActive = false;
+                // battle failure
+            }
 
-                if (allPlayersDead)
-                {
-                    // battle failure
-                }
+            else
+            {
+                // victory
+            }
+        }
 
-                else
-                {
-                    // victory
-                }
+        else
+        {
+            // if, for e.g.: a single char. dies in battle, their turn will be skipped over
+            // and this is going to keep happening for as long as dead char.s (currenHP == 0) are met in the activeBattleCharacters list:
+            while (activeBattleCharacters[currentTurn].CurrentHP == 0)
+            {
+                currentTurn++;
+
+                if (currentTurn >= activeBattleCharacters.Count)
+                    currentTurn = 0;
             }
         }
     }
@@ -293,6 +309,42 @@ public class BattleManager : MonoBehaviour
             UpdateUIStats();
             StartCoroutine(ShowAttackTextCR(text: enemyAttackText, _msg: msg, activeTime: 2));
         }
+    }
+
+    public void PlayerAttack(string moveName, int targetIndex)
+    {
+        BattleMove selectedMove = null;
+
+        for (int i = 0; i < moveList.Count; i++)
+        {
+            if (moveList[i].MoveName.ToLower().Contains(moveName.Trim()))
+            {
+                selectedMove = moveList[i];
+                break;
+            }
+        }
+
+        if (selectedMove != null)
+        {
+            // inflict status effects from that selectedMove:
+            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
+            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
+            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
+
+            string msg = activeBattleCharacters[currentTurn].CharacterName
+                         + " used "
+                         + selectedMove.MoveName
+                         + " on "
+                         + activeBattleCharacters[targetIndex].CharacterName
+                         + ".";
+
+            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
+            UpdateUIStats();
+            StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2));
+        }
+
+        //waitingForNextTurn = false;
+        StartNextTurn();
     }
 
     int DealDamage(int _targetIndex, int movePower)
