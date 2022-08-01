@@ -100,7 +100,9 @@ MonoBehaviour:
   attackIndicatorCanvasPrefab: {fileID: 0}
   characterType: 0
   characterName: Tim
-  movesAvailable: []
+  movesAvailable:
+  - flame
+  - plasma
   currentHP: 100
   maxHP: 0
   currentMP: 0

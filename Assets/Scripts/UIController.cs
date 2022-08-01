@@ -167,15 +167,18 @@ public class UIController : MonoBehaviour
     }
     #endregion
 
+    #region UI Func.
+    /// <summary>
+    /// takes the player to main menu and destroys all singleton objects, so they don't show up there:
+    /// </summary>
     public void MainMenu()
     {
-
         Destroy(PlayerController.instance.gameObject);
         PlayerController.instance = null;
-        
+
         Destroy(GameManager.instance.gameObject);
         GameManager.instance = null;
-        
+
         Destroy(AudioManager.instance.gameObject);
         AudioManager.instance = null;
 
@@ -186,22 +189,6 @@ public class UIController : MonoBehaviour
     }
 
     public void PlayButtonSFX() => AudioManager.instance.PlaySFX(4);
-
-    /// <summary>
-    /// assign functions to relevant buttons:
-    /// </summary>
-    void AssignListenersToButtons()
-    {
-        discardButton.onClick.RemoveAllListeners();
-        useOrEquipP1Button.onClick.RemoveAllListeners();
-        useOrEquipP2Button.onClick.RemoveAllListeners();
-        useOrEquipP3Button.onClick.RemoveAllListeners();
-
-        discardButton.onClick.AddListener(() => GameManager.instance.DiscardItemFromInventory(itemToDeleteDetails: selectedItemDetails, quantitityToDelete: 1));
-        useOrEquipP1Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 0, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
-        useOrEquipP2Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 1, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
-        useOrEquipP3Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 2, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
-    }
 
     /// <summary>
     /// whenever an inventory item is created, create/update relevant buttons on the UI
@@ -394,7 +381,7 @@ public class UIController : MonoBehaviour
                 if (stats[statsIndex].equippedWeapon != null)
                 {
                     if (!string.IsNullOrEmpty(stats[statsIndex].equippedWeapon.ItemName))
-                        statsValueTexts[5].SetText(stats[statsIndex].equippedWeapon.ItemName); 
+                        statsValueTexts[5].SetText(stats[statsIndex].equippedWeapon.ItemName);
                 }
 
                 else
@@ -405,7 +392,7 @@ public class UIController : MonoBehaviour
                 if (stats[statsIndex].equippedArmor != null)
                 {
                     if (!string.IsNullOrEmpty(stats[statsIndex].equippedArmor.ItemName))
-                        statsValueTexts[7].SetText(stats[statsIndex].equippedArmor.ItemName); 
+                        statsValueTexts[7].SetText(stats[statsIndex].equippedArmor.ItemName);
                 }
 
                 else
@@ -455,7 +442,7 @@ public class UIController : MonoBehaviour
                 // Here, we're setting those buttons' texts to show corresponding player names:
                 useForWindowButtonLabels[i].SetText(GameManager.instance.PlayerStatsList[i].characterName);
                 useForWindowButtonLabels[i].transform.parent.gameObject.SetActive(GameManager.instance.PlayerStatsList[i].gameObject.activeInHierarchy);
-            } 
+            }
         }
     }
 
@@ -528,11 +515,15 @@ public class UIController : MonoBehaviour
     IEnumerator ShowMessageCR(TextMeshProUGUI text, string _message = "")
     {
         if (!string.IsNullOrEmpty(_message))
-            text.SetText(_message); 
+            text.SetText(_message);
 
         while (text.color.a < 1)
         {
-            text.color = new Color(text.color.r, text.color.g, text.color.b, Mathf.MoveTowards(text.color.a, 1, Time.unscaledDeltaTime * messagTextFadeSpeed));
+            text.color = new Color(text.color.r,
+                                   text.color.g,
+                                   text.color.b,
+                                   Mathf.MoveTowards(text.color.a, 1, Time.unscaledDeltaTime * messagTextFadeSpeed));
+
             yield return null;
         }
 
@@ -544,10 +535,33 @@ public class UIController : MonoBehaviour
 
         while (text.color.a > 0)
         {
-            text.color = new Color(text.color.r, text.color.g, text.color.b, Mathf.MoveTowards(text.color.a, 0, Time.unscaledDeltaTime * messagTextFadeSpeed));
+            text.color = new Color(text.color.r,
+                                   text.color.g,
+                                   text.color.b,
+                                   Mathf.MoveTowards(text.color.a, 0, Time.unscaledDeltaTime * messagTextFadeSpeed));
+
             yield return null;
         }
-        
+
         yield break;
     }
+    #endregion
+
+    #region Helpers
+    /// <summary>
+    /// assign functions to relevant buttons:
+    /// </summary>
+    void AssignListenersToButtons()
+    {
+        discardButton.onClick.RemoveAllListeners();
+        useOrEquipP1Button.onClick.RemoveAllListeners();
+        useOrEquipP2Button.onClick.RemoveAllListeners();
+        useOrEquipP3Button.onClick.RemoveAllListeners();
+
+        discardButton.onClick.AddListener(() => GameManager.instance.DiscardItemFromInventory(itemToDeleteDetails: selectedItemDetails, quantitityToDelete: 1));
+        useOrEquipP1Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 0, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
+        useOrEquipP2Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 1, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
+        useOrEquipP3Button.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 2, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
+    }
+    #endregion
 }

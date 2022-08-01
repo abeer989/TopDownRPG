@@ -56,10 +56,9 @@ public class BattleCharacter : MonoBehaviour
         }
     }
 
-    public void SetUpBattleCharacter(PlayerStats _stats, string[] _movesAvailable, bool _isDead = false)
+    public void SetUpBattleCharacter(PlayerStats _stats, bool _isDead = false)
     {
         characterName = _stats.characterName;
-        movesAvailable = _movesAvailable;
         currentHP = _stats.currentHP;
         maxHP = _stats.maxHP;
         currentMP = _stats.currentMP;

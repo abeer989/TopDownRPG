@@ -1,29 +1,46 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour
 {
+    #region Var./Ref.
     public static BattleManager instance;
 
     [SerializeField] GameObject battleScene;
     [SerializeField] GameObject actionsMenu;
 
+    [Header("Target Menu")]
+    [SerializeField] GameObject targetAttackMenu;
+    [SerializeField] Transform targetButtonsParent;
+    [SerializeField] Button attackButton;
+    List<Button> targetAttackButtons = new List<Button>();
+
+    [Header("Magic Menu")]
+    [SerializeField] GameObject magicMenu;
+    [SerializeField] Transform magicButtonsParent;
+    [SerializeField] Button magicButton;
+    List<MagicButton> magicButtons = new List<MagicButton>();
+
     [Space]
     [SerializeField] ShowDamageNumbers damageNumberCanvas;
 
     [Space]
-    [Header("Attack Message Texts")]
+    [Header("Texts")]
+    [SerializeField] TextMeshProUGUI currentTurnText;
     [SerializeField] TextMeshProUGUI playerAttackText;
-    [SerializeField] TextMeshProUGUI enemyAttackText;    
-    
+    [SerializeField] TextMeshProUGUI enemyAttackText;
+
     [Header("Stats UI Texts")]
     [SerializeField] List<TextMeshProUGUI> playerNameTexts;
     [SerializeField] List<TextMeshProUGUI> playerHPTexts;
     [SerializeField] List<TextMeshProUGUI> playerMPTexts;
 
     [Header("Prefabs")]
+    [SerializeField] Button targetButtonPrefab;
+    [SerializeField] MagicButton magicButtonPrefab;
     [SerializeField] List<BattleCharacter> playerPrefabs;
     [SerializeField] List<BattleCharacter> enemyPrefabs;
 
@@ -35,16 +52,16 @@ public class BattleManager : MonoBehaviour
     [SerializeField] List<BattleMove> moveList;
     [SerializeField] List<GameObject> FX;
 
-    [Space]
-    [SerializeField] List<BattleCharacter> activeBattleCharacters;
+    List<BattleCharacter> activeBattleCharacters = new List<BattleCharacter>();
 
     MainCameraController cam;
     Vector3 cameraPos;
 
     int currentTurn;
     bool waitingForNextTurn;
-    //bool battleActive;
+    #endregion
 
+    #region Unity Func.
     private void Awake()
     {
         if (instance == null)
@@ -78,7 +95,7 @@ public class BattleManager : MonoBehaviour
                 {
                     actionsMenu.SetActive(true);
 
-                    if(Input.GetKeyDown(key: KeyCode.V))
+                    if (Input.GetKeyDown(key: KeyCode.V))
                         PlayerAttack("flame", 3);
                 }
 
@@ -92,7 +109,9 @@ public class BattleManager : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region Battle Func.
     /// <summary>
     /// start battle at any point in the game:
     /// </summary>
@@ -101,14 +120,16 @@ public class BattleManager : MonoBehaviour
     {
         if (!GameManager.instance.battleActive)
         {
+            // set bools and ints:
             GameManager.instance.battleActive = true;
             waitingForNextTurn = true;
             currentTurn = 0;
 
+            // position the battle scene at wherever the camera is:
             cameraPos = new Vector3(cam.transform.localPosition.x, cam.transform.localPosition.y, battleScene.transform.localPosition.z);
             battleScene.transform.localPosition = cameraPos;
             battleScene.SetActive(true);
-            AudioManager.instance.PlayMusic(0);
+            AudioManager.instance.PlayMusic(0); // play battle music
 
             // spawning players at the correct positions in battle:
             for (int i = 0; i < playerPositions.Count; i++)
@@ -122,7 +143,7 @@ public class BattleManager : MonoBehaviour
                             BattleCharacter newPlayer = Instantiate(playerPrefabs[i], playerPositions[i].position, playerPositions[i].rotation, playerPositions[i]);
 
                             PlayerStats stats = GameManager.instance.PlayerStatsList[i];
-                            newPlayer.SetUpBattleCharacter(_stats: stats, _movesAvailable: null, _isDead: false);
+                            newPlayer.SetUpBattleCharacter(_stats: stats, _isDead: false);
 
                             activeBattleCharacters.Add(newPlayer);
                         }
@@ -130,6 +151,7 @@ public class BattleManager : MonoBehaviour
                 }
             }
 
+            // spawning enemies at the correct positions in battle:
             for (int i = 0; i < enemiesToSpawn.Count; i++)
             {
                 if (!string.IsNullOrEmpty(enemiesToSpawn[i]))
@@ -143,42 +165,60 @@ public class BattleManager : MonoBehaviour
             }
 
             UpdateUIStats();
+            SetCurrentTurnText(activeBattleCharacters[currentTurn].CharacterName); // show whose turn it is currently on UI
         }
     }
 
     /// <summary>
-    /// this function will update player stats on the battle UI after every turn.
+    /// player attack function:
     /// </summary>
-    public void UpdateUIStats()
+    /// <param name="moveName"></param>
+    /// <param name="targetIndex"></param>
+    IEnumerator PlayerAttack(string moveName, int targetIndex)
     {
-        // loop through playerNameTexts list:
-        for (int i = 0; i < playerNameTexts.Count; i++)
+        targetAttackMenu.SetActive(false);
+        attackButton.interactable = false;
+
+        yield return new WaitForSecondsRealtime(.5f);
+
+        BattleMove selectedMove = null;
+
+        for (int i = 0; i < moveList.Count; i++)
         {
-            if (i < activeBattleCharacters.Count)
+            if (moveList[i].MoveName.ToLower().Contains(moveName.Trim()))
             {
-                if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.player)
-                {
-                    BattleCharacter playerData = activeBattleCharacters[i];
-
-                    playerNameTexts[i].gameObject.SetActive(true);
-                    playerNameTexts[i].SetText(playerData.CharacterName);
-                    playerHPTexts[i].SetText(Mathf.Clamp(playerData.CurrentHP, 0, int.MaxValue) + "/" + playerData.MaxHP);
-                    playerMPTexts[i].SetText(Mathf.Clamp(playerData.CurrentMP, 0, int.MaxValue) + "/" + playerData.MaxMP);
-                }
-
-                else
-                    playerNameTexts[i].gameObject.SetActive(false);
+                selectedMove = moveList[i];
+                break;
             }
-
-            else
-                playerNameTexts[i].gameObject.SetActive(false);
         }
+
+        if (selectedMove != null)
+        {
+            // inflict status effects from that selectedMove:
+            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
+            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
+            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
+
+            string msg = activeBattleCharacters[currentTurn].CharacterName
+                         + " used "
+                         + selectedMove.MoveName
+                         + " on "
+                         + activeBattleCharacters[targetIndex].CharacterName
+                         + ".";
+
+            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
+            UpdateUIStats();
+            StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2));
+        }
+
+        StartNextTurn();
+
+        yield break;
     }
 
     /// <summary>
     /// increment the turn counter and initiate the next turn:
     /// </summary>
-    /*public */
     void StartNextTurn()
     {
         currentTurn++;
@@ -190,6 +230,9 @@ public class BattleManager : MonoBehaviour
 
         UpdateBattle();
         UpdateUIStats();
+        targetAttackMenu.SetActive(false);
+        attackButton.interactable = true;
+        SetCurrentTurnText(activeBattleCharacters[currentTurn].CharacterName);
     }
 
     /// <summary>
@@ -261,7 +304,7 @@ public class BattleManager : MonoBehaviour
             // loop through the activeBattleCharacters list and adding the index of every character who's a player
             // in the playerIndices list:
             if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
-                playerIndices.Add(activeBattleCharacters.IndexOf(ab)); 
+                playerIndices.Add(activeBattleCharacters.IndexOf(ab));
         });
 
         // now that we have the player indices, we select a reandom one and take away x amount of HP from them:
@@ -311,42 +354,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void PlayerAttack(string moveName, int targetIndex)
-    {
-        BattleMove selectedMove = null;
-
-        for (int i = 0; i < moveList.Count; i++)
-        {
-            if (moveList[i].MoveName.ToLower().Contains(moveName.Trim()))
-            {
-                selectedMove = moveList[i];
-                break;
-            }
-        }
-
-        if (selectedMove != null)
-        {
-            // inflict status effects from that selectedMove:
-            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
-            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
-            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
-
-            string msg = activeBattleCharacters[currentTurn].CharacterName
-                         + " used "
-                         + selectedMove.MoveName
-                         + " on "
-                         + activeBattleCharacters[targetIndex].CharacterName
-                         + ".";
-
-            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
-            UpdateUIStats();
-            StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2));
-        }
-
-        //waitingForNextTurn = false;
-        StartNextTurn();
-    }
-
     int DealDamage(int _targetIndex, int movePower)
     {
         float attackPower = activeBattleCharacters[currentTurn].Str + activeBattleCharacters[currentTurn].WpnPower;
@@ -370,6 +377,106 @@ public class BattleManager : MonoBehaviour
 
         yield break;
     }
+    #endregion
+
+    #region UI
+    /// <summary>
+    /// this function will update player stats on the battle UI after every turn.
+    /// </summary>
+    public void UpdateUIStats()
+    {
+        // loop through playerNameTexts list:
+        for (int i = 0; i < playerNameTexts.Count; i++)
+        {
+            if (i < activeBattleCharacters.Count)
+            {
+                // activate a stat element when the character is a player and fill in their stats (HP, MP, name):
+                if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.player)
+                {
+                    BattleCharacter playerData = activeBattleCharacters[i];
+
+                    playerNameTexts[i].gameObject.SetActive(true);
+                    playerNameTexts[i].SetText(playerData.CharacterName);
+                    playerHPTexts[i].SetText(Mathf.Clamp(playerData.CurrentHP, 0, int.MaxValue) + "/" + playerData.MaxHP);
+                    playerMPTexts[i].SetText(Mathf.Clamp(playerData.CurrentMP, 0, int.MaxValue) + "/" + playerData.MaxMP);
+                }
+
+                // deactivate if its an enemy:
+                else
+                    playerNameTexts[i].gameObject.SetActive(false);
+            }
+
+            else
+                playerNameTexts[i].gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// open target select window:
+    /// </summary>
+    public void OpenAttackWindow()
+    {
+        targetAttackMenu.SetActive(true);
+
+        if (targetAttackButtons.Count > 0)
+        {
+            targetAttackButtons.ForEach(tb => Destroy(tb.gameObject));
+            targetAttackButtons.Clear();
+        }
+
+        // loop through activeBattleCharacters
+        for (int i = 0; i < activeBattleCharacters.Count; i++)
+        {
+            if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.enemy)
+            {
+                // if the character on the i-th index is an enemy, instantiate a targetButton for that enemy
+                // and set its text to be their name and add the PlayerAttack() func. listener:
+                int index = i;
+                Button targetButton = Instantiate(targetButtonPrefab, targetButtonsParent);
+                targetButton.GetComponentInChildren<TextMeshProUGUI>()?.SetText(activeBattleCharacters[i].CharacterName);
+                targetButton.onClick.RemoveAllListeners();
+                targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: "slash", targetIndex: index)));
+
+                targetAttackButtons.Add(targetButton);
+            }
+        }
+    }
+
+    public void OpenMagicWindow()
+    {
+        magicMenu.SetActive(true);
+
+        if (magicButtons.Count > 0)
+        {
+            magicButtons.ForEach(mb => Destroy(mb.gameObject));
+            magicButtons.Clear();
+        }
+
+        if (activeBattleCharacters[currentTurn].CharacterType == BattleCharacter.BattleCharacterType.player)
+        {
+            if (activeBattleCharacters[currentTurn].MovesAvailable != null)
+            {
+                if (activeBattleCharacters[currentTurn].MovesAvailable.Length > 0)
+                {
+                    for (int i = 0; i < moveList.Count; i++)
+                    {
+                        for (int j = 0; j < activeBattleCharacters[currentTurn].MovesAvailable.Length; j++)
+                        {
+                            if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[j].Trim()))
+                            {
+                                MagicButton magicButton = Instantiate(magicButtonPrefab, magicButtonsParent);
+                                magicButton.spellNameText.SetText(moveList[i].MoveName);
+                                magicButton.spellCostText.SetText(moveList[i].MoveCost.ToString() + " MP");
+                                magicButtons.Add(magicButton);
+                            }
+                        }
+                    }
+                } 
+            }
+        }
+    }
+
+    void SetCurrentTurnText(string name) => currentTurnText.SetText("CURRENT TURN: " + name);
 
     IEnumerator ShowAttackTextCR(TextMeshProUGUI text, string _msg, float activeTime = 1)
     {
@@ -381,4 +488,5 @@ public class BattleManager : MonoBehaviour
 
         yield break;
     }
+    #endregion
 }
