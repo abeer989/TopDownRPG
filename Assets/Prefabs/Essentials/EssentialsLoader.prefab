@@ -48,3 +48,4 @@ MonoBehaviour:
   UICanvasPrefab: {fileID: 5625967765118759034, guid: 58350c5257b653148a4e3e587747e426, type: 3}
   gameManagerPrefab: {fileID: 6917454584478748606, guid: 2d88a01a9080b7848b4fa44c34e8bf0b, type: 3}
   audioManagerPrefab: {fileID: 917533548773921450, guid: 6acad5c6dcd3fcf49a862677c654ac56, type: 3}
+  battleManagerPrefab: {fileID: 4965103361785746468, guid: 59c5885bd34c9f1419fe4e0e61c17856, type: 3}

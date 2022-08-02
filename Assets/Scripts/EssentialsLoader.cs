@@ -6,6 +6,7 @@ public class EssentialsLoader : MonoBehaviour
     [SerializeField] GameObject UICanvasPrefab;
     [SerializeField] GameObject gameManagerPrefab;
     [SerializeField] GameObject audioManagerPrefab;
+    [SerializeField] GameObject battleManagerPrefab;
 
     private void Awake()
     {
@@ -21,6 +22,9 @@ public class EssentialsLoader : MonoBehaviour
             GameManager.instance = Instantiate(gameManagerPrefab).GetComponent<GameManager>();        
         
         if (AudioManager.instance == null)
-            AudioManager.instance = Instantiate(audioManagerPrefab).GetComponent<AudioManager>();
+            AudioManager.instance = Instantiate(audioManagerPrefab).GetComponent<AudioManager>();        
+        
+        if (BattleManager.instance == null)
+            BattleManager.instance = Instantiate(battleManagerPrefab).GetComponent<BattleManager>();
     }
 }

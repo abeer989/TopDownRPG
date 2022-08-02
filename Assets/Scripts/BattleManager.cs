@@ -11,6 +11,7 @@ public class BattleManager : MonoBehaviour
 
     [SerializeField] GameObject battleScene;
     [SerializeField] GameObject actionsMenu;
+    [SerializeField] BattleNotification battleNotif;
 
     [Header("Target Menu")]
     [SerializeField] GameObject targetAttackMenu;
@@ -22,7 +23,23 @@ public class BattleManager : MonoBehaviour
     [SerializeField] GameObject magicMenu;
     [SerializeField] Transform magicButtonsParent;
     [SerializeField] Button magicButton;
-    List<MagicButton> magicButtons = new List<MagicButton>();
+    List<MagicButton> magicButtons = new List<MagicButton>();    
+    
+    [Header("Items Menu")]
+    [SerializeField] GameObject itemsMenu;
+    [SerializeField] Transform itemButtonsParent;
+    [SerializeField] Button itemButton;
+    List<BattleItemButton> itemButtons = new List<BattleItemButton>();
+
+    [Space]
+    [SerializeField] GameObject useForMenu;
+    [SerializeField] Button useButton1;
+    [SerializeField] Button useButton2;
+    [SerializeField] Button useButton3;
+    [SerializeField] List<TextMeshProUGUI> useForWindowButtonLabels;
+
+    [Header("Flee")]
+    [SerializeField] int fleeChance;
 
     [Space]
     [SerializeField] ShowDamageNumbers damageNumberCanvas;
@@ -41,6 +58,7 @@ public class BattleManager : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] Button targetButtonPrefab;
     [SerializeField] MagicButton magicButtonPrefab;
+    [SerializeField] BattleItemButton battleItemButtonPrefab;
     [SerializeField] List<BattleCharacter> playerPrefabs;
     [SerializeField] List<BattleCharacter> enemyPrefabs;
 
@@ -54,6 +72,7 @@ public class BattleManager : MonoBehaviour
 
     List<BattleCharacter> activeBattleCharacters = new List<BattleCharacter>();
 
+    ItemScriptable selectedItemDetails;
     MainCameraController cam;
     Vector3 cameraPos;
 
@@ -75,9 +94,17 @@ public class BattleManager : MonoBehaviour
             if (instance != this)
                 Destroy(gameObject);
         }
+
+        //cam = FindObjectOfType<MainCameraController>();
     }
 
-    private void OnEnable() => cam = FindObjectOfType<MainCameraController>();
+    private void OnEnable()
+    {
+        AssignListenersToButtons();
+        attackButton.onClick.RemoveAllListeners();
+        attackButton.onClick.AddListener(() => OpenAttackWindow()); // simple slash attack
+        cam = FindObjectOfType<MainCameraController>();
+    }
 
     private void Update()
     {
@@ -120,52 +147,74 @@ public class BattleManager : MonoBehaviour
     {
         if (!GameManager.instance.battleActive)
         {
-            // set bools and ints:
-            GameManager.instance.battleActive = true;
-            waitingForNextTurn = true;
-            currentTurn = 0;
+            cam = FindObjectOfType<MainCameraController>();
 
-            // position the battle scene at wherever the camera is:
-            cameraPos = new Vector3(cam.transform.localPosition.x, cam.transform.localPosition.y, battleScene.transform.localPosition.z);
-            battleScene.transform.localPosition = cameraPos;
-            battleScene.SetActive(true);
-            AudioManager.instance.PlayMusic(0); // play battle music
-
-            // spawning players at the correct positions in battle:
-            for (int i = 0; i < playerPositions.Count; i++)
+            if (cam != null)
             {
-                if (GameManager.instance.PlayerStatsList[i].gameObject.activeInHierarchy)
+                // set bools and ints:
+                GameManager.instance.battleActive = true;
+                waitingForNextTurn = true;
+                currentTurn = 0;
+
+                // position the battle scene at wherever the camera is:
+                cameraPos = new Vector3(cam.transform.localPosition.x, cam.transform.localPosition.y, battleScene.transform.localPosition.z);
+                battleScene.transform.localPosition = cameraPos;
+                battleScene.SetActive(true);
+                AudioManager.instance.PlayMusic(0); // play battle music
+
+                // spawning players at the correct positions in battle:
+                for (int i = 0; i < playerPositions.Count; i++)
                 {
-                    for (int j = 0; j < playerPrefabs.Count; j++)
+                    if (GameManager.instance.PlayerStatsList[i].gameObject.activeInHierarchy)
                     {
-                        if (playerPrefabs[j].CharacterName == GameManager.instance.PlayerStatsList[i].characterName)
+                        for (int j = 0; j < playerPrefabs.Count; j++)
                         {
-                            BattleCharacter newPlayer = Instantiate(playerPrefabs[i], playerPositions[i].position, playerPositions[i].rotation, playerPositions[i]);
+                            if (playerPrefabs[j].CharacterName == GameManager.instance.PlayerStatsList[i].characterName)
+                            {
+                                BattleCharacter newPlayer = Instantiate(playerPrefabs[i], playerPositions[i].position, playerPositions[i].rotation, playerPositions[i]);
 
-                            PlayerStats stats = GameManager.instance.PlayerStatsList[i];
-                            newPlayer.SetUpBattleCharacter(_stats: stats, _isDead: false);
+                                PlayerStats stats = GameManager.instance.PlayerStatsList[i];
+                                newPlayer.SetUpBattleCharacter(_stats: stats, _isDead: false);
 
-                            activeBattleCharacters.Add(newPlayer);
+                                activeBattleCharacters.Add(newPlayer);
+                            }
                         }
                     }
                 }
-            }
 
-            // spawning enemies at the correct positions in battle:
-            for (int i = 0; i < enemiesToSpawn.Count; i++)
-            {
-                if (!string.IsNullOrEmpty(enemiesToSpawn[i]))
+                // spawning enemies at the correct positions in battle:
+                for (int i = 0; i < enemiesToSpawn.Count; i++)
                 {
-                    for (int j = 0; j < enemyPrefabs.Count; j++)
+                    if (!string.IsNullOrEmpty(enemiesToSpawn[i]))
                     {
-                        if (enemyPrefabs[j].CharacterName.Trim().ToLower().Contains(enemiesToSpawn[i]))
-                            activeBattleCharacters.Add(Instantiate(enemyPrefabs[i], enemyPositions[i].position, enemyPositions[i].rotation, enemyPositions[i]));
+                        for (int j = 0; j < enemyPrefabs.Count; j++)
+                        {
+                            if (enemyPrefabs[j].CharacterName.Trim().ToLower().Contains(enemiesToSpawn[i]))
+                                activeBattleCharacters.Add(Instantiate(enemyPrefabs[i], enemyPositions[i].position, enemyPositions[i].rotation, enemyPositions[i]));
+                        }
                     }
                 }
-            }
 
-            UpdateUIStats();
-            SetCurrentTurnText(activeBattleCharacters[currentTurn].CharacterName); // show whose turn it is currently on UI
+                UpdateUIStats();
+                SetCurrentTurnText(activeBattleCharacters[currentTurn].CharacterName); // show whose turn it is currently on UI 
+            }
+        }
+    }
+
+    public void Flee()
+    {
+        int rand = Random.Range(0, 101);
+
+        if (rand < fleeChance)
+        {
+            GameManager.instance.battleActive = false;
+            battleScene.SetActive(false);
+        }
+
+        else
+        {
+            StartNextTurn();
+            battleNotif.Activate("COULDN'T ESCAPE!");
         }
     }
 
@@ -182,6 +231,7 @@ public class BattleManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(.5f);
 
         BattleMove selectedMove = null;
+        bool enoughMana = false;
 
         for (int i = 0; i < moveList.Count; i++)
         {
@@ -194,24 +244,42 @@ public class BattleManager : MonoBehaviour
 
         if (selectedMove != null)
         {
-            // inflict status effects from that selectedMove:
-            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
-            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
-            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
+            if (activeBattleCharacters[currentTurn].CurrentMP > selectedMove.MoveCost)
+            {
+                enoughMana = true;
 
-            string msg = activeBattleCharacters[currentTurn].CharacterName
-                         + " used "
-                         + selectedMove.MoveName
-                         + " on "
-                         + activeBattleCharacters[targetIndex].CharacterName
-                         + ".";
+                // inflict status effects from that selectedMove:
+                activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
+                activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
+                Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
 
-            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
-            UpdateUIStats();
-            StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2));
+                string msg = activeBattleCharacters[currentTurn].CharacterName
+                             + " used "
+                             + selectedMove.MoveName
+                             + " on "
+                             + activeBattleCharacters[targetIndex].CharacterName
+                             + ".";
+
+                Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
+                UpdateUIStats();
+                StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2)); 
+            }
+
+            else
+            {
+                enoughMana = false;
+                attackButton.interactable = true;
+                string msg = "NOT ENOUGH MANA FOR " + selectedMove.MoveName + "!";
+                battleNotif.Activate(msg);
+                //StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2));
+            }
         }
 
-        StartNextTurn();
+        else
+            Debug.LogError(moveName + ": MOVE NOT FOUND!");
+
+        if(enoughMana)
+            StartNextTurn();
 
         yield break;
     }
@@ -399,6 +467,8 @@ public class BattleManager : MonoBehaviour
                     playerNameTexts[i].SetText(playerData.CharacterName);
                     playerHPTexts[i].SetText(Mathf.Clamp(playerData.CurrentHP, 0, int.MaxValue) + "/" + playerData.MaxHP);
                     playerMPTexts[i].SetText(Mathf.Clamp(playerData.CurrentMP, 0, int.MaxValue) + "/" + playerData.MaxMP);
+
+                    //GameManager.instance.PlayerStatsList[i].currentHP = playerData.CurrentHP;
                 }
 
                 // deactivate if its an enemy:
@@ -414,7 +484,7 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// open target select window:
     /// </summary>
-    public void OpenAttackWindow()
+    public void OpenAttackWindow(bool attack = true, string spellName = null)
     {
         targetAttackMenu.SetActive(true);
 
@@ -434,14 +504,23 @@ public class BattleManager : MonoBehaviour
                 int index = i;
                 Button targetButton = Instantiate(targetButtonPrefab, targetButtonsParent);
                 targetButton.GetComponentInChildren<TextMeshProUGUI>()?.SetText(activeBattleCharacters[i].CharacterName);
+
                 targetButton.onClick.RemoveAllListeners();
-                targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: "slash", targetIndex: index)));
+
+                if(attack)
+                    targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: "slash", targetIndex: index)));
+
+                else if (!attack && !string.IsNullOrEmpty(spellName))
+                    targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: spellName, targetIndex: index)));
 
                 targetAttackButtons.Add(targetButton);
             }
         }
     }
 
+    /// <summary>
+    /// open magic window:
+    /// </summary>
     public void OpenMagicWindow()
     {
         magicMenu.SetActive(true);
@@ -465,8 +544,15 @@ public class BattleManager : MonoBehaviour
                             if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[j].Trim()))
                             {
                                 MagicButton magicButton = Instantiate(magicButtonPrefab, magicButtonsParent);
-                                magicButton.spellNameText.SetText(moveList[i].MoveName);
-                                magicButton.spellCostText.SetText(moveList[i].MoveCost.ToString() + " MP");
+                                magicButton.Setup(_spellName: moveList[i].MoveName, _spellCostText: moveList[i].MoveCost.ToString() + " MP");
+                                //magicButton.spellNameText.SetText(moveList[i].MoveName);
+                                //magicButton.spellCostText.SetText(moveList[i].MoveCost.ToString() + " MP");
+
+                                string spellNameArg = activeBattleCharacters[currentTurn].MovesAvailable[j].Trim();
+                                magicButton.GetComponent<Button>()?.onClick.RemoveAllListeners();
+                                magicButton.GetComponent<Button>()?.onClick.AddListener(() => OpenAttackWindow(attack: false, spellName: spellNameArg));
+                                magicButton.GetComponent<Button>()?.onClick.AddListener(CloseMagicWindow);
+
                                 magicButtons.Add(magicButton);
                             }
                         }
@@ -475,6 +561,82 @@ public class BattleManager : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// open target select window:
+    /// </summary>
+    public void OpenBattleItemsWindow()
+    {
+        itemsMenu.SetActive(true);
+
+        if (itemButtons.Count > 0)
+        {
+            itemButtons.ForEach(ib => Destroy(ib.gameObject));
+            itemButtons.Clear();
+        }
+
+        for (int i = 0; i < GameManager.instance.ItemsHeldDetails.Count; i++)
+        {
+            ItemScriptable itemData = GameManager.instance.ItemsHeldDetails[i];
+
+            if (itemData.ItemType != Item.ItemType.armor && itemData.ItemType != Item.ItemType.weapon)
+            {
+                BattleItemButton battleItemButton = Instantiate(battleItemButtonPrefab, itemButtonsParent);
+                battleItemButton.Setup(_itemSprite: itemData.ItemSprite, _itemName: itemData.ItemName,
+                                       _itemQuantity: GameManager.instance.GetItemQuantity(itemData).ToString(),
+                                       _itemDetails: itemData);
+
+                battleItemButton.GetComponent<Button>()?.onClick.RemoveAllListeners();
+                battleItemButton.GetComponent<Button>()?.onClick.AddListener(OpenUseForWindow);
+
+                itemButtons.Add(battleItemButton);
+            }
+        }
+    }
+
+    public void SelectItem(ItemScriptable itemDetails)
+    {
+        //CloseUseForWindow();
+
+        selectedItemDetails = itemDetails;
+        //itemWindowNameText.SetText(itemDetails.ItemName);
+        //itemWindowDescText.SetText(itemDetails.Description);
+
+        //// show the use & discard buttons only when an item is selected:
+        //useForWindowButton.gameObject.SetActive(true);
+        //discardButton.gameObject.SetActive(true);
+
+        //// if the item is a consumable, change the use button's text to "USE":
+        //if (selectedItemDetails.ItemType != Item.ItemType.weapon && selectedItemDetails.ItemType != Item.ItemType.armor)
+        //    useOrEquipButtonText.SetText("USE");
+
+        //// else if the item is a weapon/armor piece, change the use button's text to "EQUIP":
+        //else
+        //    useOrEquipButtonText.SetText("EQUIP");
+    }
+
+    void OpenUseForWindow()
+    {
+        if (selectedItemDetails)
+        {
+            useForMenu.SetActive(true);
+
+            for (int i = 0; i < useForWindowButtonLabels.Count; i++)
+            {
+                // the "Use For?" window has buttons that apply the selected item's effect on the corresponding player/
+                // Here, we're setting those buttons' texts to show corresponding player names:
+                useForWindowButtonLabels[i].SetText(GameManager.instance.PlayerStatsList[i].characterName);
+                useForWindowButtonLabels[i].transform.parent.gameObject.SetActive(GameManager.instance.PlayerStatsList[i].gameObject.activeInHierarchy);
+            } 
+        }
+    }
+
+    void CloseUseForWindow()
+    {
+        useForMenu.SetActive(false);
+    }
+
+    void CloseMagicWindow() => magicMenu.SetActive(false);
 
     void SetCurrentTurnText(string name) => currentTurnText.SetText("CURRENT TURN: " + name);
 
@@ -487,6 +649,22 @@ public class BattleManager : MonoBehaviour
         text.gameObject.SetActive(false);
 
         yield break;
+    }
+
+    void AssignListenersToButtons()
+    {
+        useButton1.onClick.RemoveAllListeners();
+        useButton2.onClick.RemoveAllListeners();
+        useButton3.onClick.RemoveAllListeners();
+
+        useButton1.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 0, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
+        useButton1.onClick.AddListener(UpdateUIStats);
+
+        useButton2.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 1, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
+        useButton2.onClick.AddListener(UpdateUIStats);
+
+        useButton3.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 2, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
+        useButton3.onClick.AddListener(UpdateUIStats);
     }
     #endregion
 }

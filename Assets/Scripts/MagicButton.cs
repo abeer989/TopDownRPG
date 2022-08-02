@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class MagicButton : MonoBehaviour
 {
-    public TextMeshProUGUI spellNameText;
-    public TextMeshProUGUI spellCostText;
+    [SerializeField] TextMeshProUGUI spellNameText;
+    [SerializeField] TextMeshProUGUI spellCostText;
+
+    public void Setup(string _spellName, string _spellCostText)
+    {
+        spellNameText.SetText(_spellName);
+        spellCostText.SetText(_spellCostText);
+    }
 }

@@ -103,6 +103,7 @@ MonoBehaviour:
   movesAvailable:
   - flame
   - plasma
+  - freeze
   currentHP: 100
   maxHP: 0
   currentMP: 0
