@@ -51,7 +51,7 @@ MonoBehaviour:
   baseEXP: 1000
   EXPLevelThresholds: 
   currentHP: 0
-  maxHP: 100
+  maxHP: 120
   currentMP: 0
   maxMP: 30
   strength: 15
@@ -112,7 +112,7 @@ MonoBehaviour:
   baseEXP: 1000
   EXPLevelThresholds: 
   currentHP: 0
-  maxHP: 100
+  maxHP: 150
   currentMP: 0
   maxMP: 30
   strength: 15
@@ -235,6 +235,7 @@ MonoBehaviour:
   switchingScenes: 0
   dialogActive: 0
   shopActive: 0
+  battleActive: 0
   maxNumberOfItems: 99
   gold: 9000
   defaultGoldAmount: 9000

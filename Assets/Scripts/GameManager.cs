@@ -239,6 +239,9 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
+        if(battleActive)
+            UpdateCorrespondingBattleCharacter(selectedCharacter);
+
         UIController.instance.CloseUseForWindow(); // close the "use for?" window
         DiscardItemFromInventory(itemToDeleteDetails: itemToUseDetails, quantitityToDelete: quantityToUse, dropItem: false); // and then discarding it from the inventory
     }
@@ -557,6 +560,18 @@ public class GameManager : MonoBehaviour
             float.Parse(sArray[2]));
 
         return result;
+    }
+
+    void UpdateCorrespondingBattleCharacter(PlayerStats player)
+    {
+        for (int j = 0; j < BattleManager.instance.ActiveBattleCharacters.Count; j++)
+        {
+            if (BattleManager.instance.ActiveBattleCharacters[j].CharacterType == BattleCharacter.BattleCharacterType.player)
+            {
+                if (player.characterName == BattleManager.instance.ActiveBattleCharacters[j].CharacterName)
+                    BattleManager.instance.ActiveBattleCharacters[j].SetUpBattleCharacter(player);
+            }
+        }
     }
     #endregion
 }

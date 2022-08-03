@@ -1480,10 +1480,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5223276998764776488}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 4965103361785746466}
+        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
+        m_MethodName: CloseUseForWindow
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2429,7 +2429,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2703272411296232544}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4965103361785746466}
+        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
+        m_MethodName: CloseUseForWindow
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3533068866361795538
 GameObject:
   m_ObjectHideFlags: 0
@@ -2551,7 +2563,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1820251709541265208}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4965103361785746466}
+        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
+        m_MethodName: CloseUseForWindow
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4965103361660350116
 GameObject:
   m_ObjectHideFlags: 0
@@ -3140,7 +3164,7 @@ MonoBehaviour:
   itemButton: {fileID: 4965103362436654076}
   useForMenu: {fileID: 5223276998764776488}
   useButton1: {fileID: 6830002373827763401}
-  useButton2: {fileID: 2424093168165042230}
+  useButton2: {fileID: 316399984589134404}
   useButton3: {fileID: 2424093168165042230}
   useForWindowButtonLabels:
   - {fileID: 3234297731925974782}
@@ -7243,7 +7267,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7974713077075634005}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4965103361785746466}
+        m_TargetAssemblyTypeName: BattleManager, Assembly-CSharp
+        m_MethodName: CloseUseForWindow
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6428356365950148652
 GameObject:
   m_ObjectHideFlags: 0

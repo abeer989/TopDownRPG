@@ -13,7 +13,7 @@ public class PlayerStats : MonoBehaviour
 
     [Space]
     public int currentHP;
-    public int maxHP = 100;
+    public int maxHP;
     public int currentMP;
     public int maxMP = 30;
     public int strength = 15;
@@ -46,8 +46,8 @@ public class PlayerStats : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-            AddEXP(1000);
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //    AddEXP(1000);
     }
 
     public void AddEXP(int expToAdd)

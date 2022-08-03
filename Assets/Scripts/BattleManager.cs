@@ -78,6 +78,11 @@ public class BattleManager : MonoBehaviour
 
     int currentTurn;
     bool waitingForNextTurn;
+
+    public List<BattleCharacter> ActiveBattleCharacters
+    {
+        get { return activeBattleCharacters; }
+    }
     #endregion
 
     #region Unity Func.
@@ -94,15 +99,11 @@ public class BattleManager : MonoBehaviour
             if (instance != this)
                 Destroy(gameObject);
         }
-
-        //cam = FindObjectOfType<MainCameraController>();
     }
 
-    private void OnEnable()
+    private void Start()
     {
         AssignListenersToButtons();
-        attackButton.onClick.RemoveAllListeners();
-        attackButton.onClick.AddListener(() => OpenAttackWindow()); // simple slash attack
         cam = FindObjectOfType<MainCameraController>();
     }
 
@@ -122,15 +123,13 @@ public class BattleManager : MonoBehaviour
                 {
                     actionsMenu.SetActive(true);
 
-                    if (Input.GetKeyDown(key: KeyCode.V))
-                        PlayerAttack("flame", 3);
+                    //if (Input.GetKeyDown(key: KeyCode.V))
+                    //    PlayerAttack("flame", 3);
                 }
 
                 else
                 {
                     actionsMenu.SetActive(false);
-
-                    // enemy attack:
                     StartCoroutine(EnemyAttackDelayCR());
                 }
             }
@@ -218,70 +217,64 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// player attack function:
-    /// </summary>
-    /// <param name="moveName"></param>
-    /// <param name="targetIndex"></param>
-    IEnumerator PlayerAttack(string moveName, int targetIndex)
+    void EnemyAttack()
     {
-        targetAttackMenu.SetActive(false);
-        attackButton.interactable = false;
+        // locking on to target:
+        List<int> playerIndices = new List<int>(); // an indices list to get the indices of all players in the activeBattleCharacters list
 
-        yield return new WaitForSecondsRealtime(.5f);
+        activeBattleCharacters.ForEach(ab =>
+        {
+            // loop through the activeBattleCharacters list and adding the index of every character who's a player
+            // in the playerIndices list:
+            if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
+                playerIndices.Add(activeBattleCharacters.IndexOf(ab));
+        });
 
+        // now that we have the player indices, we select a reandom one and take away x amount of HP from them:
+        int targetIndex = playerIndices[Random.Range(0, playerIndices.Count)];
+
+        // choose a random attack (string -- name of attack) from the activeBC's movesAvailable list:
+        int attackIndex = Random.Range(0, activeBattleCharacters[currentTurn].MovesAvailable.Length);
+
+        // cache:
         BattleMove selectedMove = null;
-        bool enoughMana = false;
 
-        for (int i = 0; i < moveList.Count; i++)
+        // loop through the moveList and check if an attack of the same name exists in there
+        if (activeBattleCharacters[currentTurn].MovesAvailable.Length > 0)
         {
-            if (moveList[i].MoveName.ToLower().Contains(moveName.Trim()))
+            for (int i = 0; i < moveList.Count; i++)
             {
-                selectedMove = moveList[i];
-                break;
-            }
-        }
-
-        if (selectedMove != null)
-        {
-            if (activeBattleCharacters[currentTurn].CurrentMP > selectedMove.MoveCost)
-            {
-                enoughMana = true;
-
-                // inflict status effects from that selectedMove:
-                activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
-                activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
-                Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
-
-                string msg = activeBattleCharacters[currentTurn].CharacterName
-                             + " used "
-                             + selectedMove.MoveName
-                             + " on "
-                             + activeBattleCharacters[targetIndex].CharacterName
-                             + ".";
-
-                Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
-                UpdateUIStats();
-                StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2)); 
-            }
-
-            else
-            {
-                enoughMana = false;
-                attackButton.interactable = true;
-                string msg = "NOT ENOUGH MANA FOR " + selectedMove.MoveName + "!";
-                battleNotif.Activate(msg);
-                //StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2));
+                // if it doesn, cache it in the selectedAttack var:
+                if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[attackIndex].Trim()))
+                {
+                    selectedMove = moveList[i];
+                    break;
+                }
             }
         }
 
         else
-            Debug.LogError(moveName + ": MOVE NOT FOUND!");
+            Debug.LogError("NO MOVES AVAILABLE FOR: " + activeBattleCharacters[currentTurn].CharacterName);
 
-        if(enoughMana)
-            StartNextTurn();
+        //Debug.LogError(selectedMove);
+        if (selectedMove != null)
+        {
+            // inflict status effects from that selectedAttack:
+            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
+            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
+            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
 
-        yield break;
+            string msg = activeBattleCharacters[currentTurn].CharacterName
+                         + " used "
+                         + selectedMove.MoveName
+                         + " on "
+                         + activeBattleCharacters[targetIndex].CharacterName
+                         + ".";
+
+            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
+            UpdateUIStats();
+            StartCoroutine(ShowAttackTextCR(text: enemyAttackText, _msg: msg, activeTime: 2));
+        }
     }
 
     /// <summary>
@@ -362,66 +355,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    void EnemyAttack()
-    {
-        // locking on to target:
-        List<int> playerIndices = new List<int>(); // an indices list to get the indices of all players in the activeBattleCharacters list
-
-        activeBattleCharacters.ForEach(ab =>
-        {
-            // loop through the activeBattleCharacters list and adding the index of every character who's a player
-            // in the playerIndices list:
-            if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
-                playerIndices.Add(activeBattleCharacters.IndexOf(ab));
-        });
-
-        // now that we have the player indices, we select a reandom one and take away x amount of HP from them:
-        int targetIndex = playerIndices[Random.Range(0, playerIndices.Count)];
-
-        // choose a random attack (string -- name of attack) from the activeBC's movesAvailable list:
-        int attackIndex = Random.Range(0, activeBattleCharacters[currentTurn].MovesAvailable.Length);
-
-        // cache:
-        BattleMove selectedMove = null;
-
-        // loop through the moveList and check if an attack of the same name exists in there
-        if (activeBattleCharacters[currentTurn].MovesAvailable.Length > 0)
-        {
-            for (int i = 0; i < moveList.Count; i++)
-            {
-                // if it doesn, cache it in the selectedAttack var:
-                if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[attackIndex].Trim()))
-                {
-                    selectedMove = moveList[i];
-                    break;
-                }
-            }
-        }
-
-        else
-            Debug.LogError("NO MOVES AVAILABLE FOR: " + activeBattleCharacters[currentTurn].CharacterName);
-
-        //Debug.LogError(selectedMove);
-        if (selectedMove != null)
-        {
-            // inflict status effects from that selectedAttack:
-            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
-            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
-            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
-
-            string msg = activeBattleCharacters[currentTurn].CharacterName
-                         + " used "
-                         + selectedMove.MoveName
-                         + " on "
-                         + activeBattleCharacters[targetIndex].CharacterName
-                         + ".";
-
-            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
-            UpdateUIStats();
-            StartCoroutine(ShowAttackTextCR(text: enemyAttackText, _msg: msg, activeTime: 2));
-        }
-    }
-
     int DealDamage(int _targetIndex, int movePower)
     {
         float attackPower = activeBattleCharacters[currentTurn].Str + activeBattleCharacters[currentTurn].WpnPower;
@@ -433,6 +366,67 @@ public class BattleManager : MonoBehaviour
         UpdateUIStats();
 
         return damage;
+    }
+
+    IEnumerator PlayerAttack(string moveName, int targetIndex)
+    {
+        targetAttackMenu.SetActive(false);
+        attackButton.interactable = false;
+
+        yield return new WaitForSecondsRealtime(.5f);
+
+        BattleMove selectedMove = null;
+        bool enoughMana = false;
+
+        for (int i = 0; i < moveList.Count; i++)
+        {
+            if (moveList[i].MoveName.ToLower().Contains(moveName.Trim()))
+            {
+                selectedMove = moveList[i];
+                break;
+            }
+        }
+
+        if (selectedMove != null)
+        {
+            if (activeBattleCharacters[currentTurn].CurrentMP > selectedMove.MoveCost)
+            {
+                enoughMana = true;
+
+                // inflict status effects from that selectedMove:
+                activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
+                activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
+                Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
+
+                string msg = activeBattleCharacters[currentTurn].CharacterName
+                             + " used "
+                             + selectedMove.MoveName
+                             + " on "
+                             + activeBattleCharacters[targetIndex].CharacterName
+                             + ".";
+
+                Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
+                UpdateUIStats();
+                StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2));
+            }
+
+            else
+            {
+                enoughMana = false;
+                attackButton.interactable = true;
+                string msg = "NOT ENOUGH MANA FOR " + selectedMove.MoveName + "!";
+                battleNotif.Activate(msg);
+                //StartCoroutine(ShowAttackTextCR(text: playerAttackText, _msg: msg, activeTime: 2));
+            }
+        }
+
+        else
+            Debug.LogError(moveName + ": MOVE NOT FOUND!");
+
+        if (enoughMana)
+            StartNextTurn();
+
+        yield break;
     }
 
     IEnumerator EnemyAttackDelayCR()
@@ -468,7 +462,8 @@ public class BattleManager : MonoBehaviour
                     playerHPTexts[i].SetText(Mathf.Clamp(playerData.CurrentHP, 0, int.MaxValue) + "/" + playerData.MaxHP);
                     playerMPTexts[i].SetText(Mathf.Clamp(playerData.CurrentMP, 0, int.MaxValue) + "/" + playerData.MaxMP);
 
-                    //GameManager.instance.PlayerStatsList[i].currentHP = playerData.CurrentHP;
+                    // to update player stats as well in our GameManager:
+                    UpdateCorrespondingPlayerStats(battleCharacter: playerData);
                 }
 
                 // deactivate if its an enemy:
@@ -478,43 +473,6 @@ public class BattleManager : MonoBehaviour
 
             else
                 playerNameTexts[i].gameObject.SetActive(false);
-        }
-    }
-
-    /// <summary>
-    /// open target select window:
-    /// </summary>
-    public void OpenAttackWindow(bool attack = true, string spellName = null)
-    {
-        targetAttackMenu.SetActive(true);
-
-        if (targetAttackButtons.Count > 0)
-        {
-            targetAttackButtons.ForEach(tb => Destroy(tb.gameObject));
-            targetAttackButtons.Clear();
-        }
-
-        // loop through activeBattleCharacters
-        for (int i = 0; i < activeBattleCharacters.Count; i++)
-        {
-            if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.enemy)
-            {
-                // if the character on the i-th index is an enemy, instantiate a targetButton for that enemy
-                // and set its text to be their name and add the PlayerAttack() func. listener:
-                int index = i;
-                Button targetButton = Instantiate(targetButtonPrefab, targetButtonsParent);
-                targetButton.GetComponentInChildren<TextMeshProUGUI>()?.SetText(activeBattleCharacters[i].CharacterName);
-
-                targetButton.onClick.RemoveAllListeners();
-
-                if(attack)
-                    targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: "slash", targetIndex: index)));
-
-                else if (!attack && !string.IsNullOrEmpty(spellName))
-                    targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: spellName, targetIndex: index)));
-
-                targetAttackButtons.Add(targetButton);
-            }
         }
     }
 
@@ -568,7 +526,58 @@ public class BattleManager : MonoBehaviour
     public void OpenBattleItemsWindow()
     {
         itemsMenu.SetActive(true);
+        PopulateBattleItemsWindow();
+    }
 
+    public void SelectItem(ItemScriptable itemDetails) => selectedItemDetails = itemDetails;
+
+    public void ClearSelectedItem() => selectedItemDetails = null;
+
+    public void CloseUseForWindow()
+    {
+        useForMenu.SetActive(false);
+        ClearSelectedItem();
+    }
+
+    /// <summary>
+    /// open target select window:
+    /// </summary>
+    void OpenAttackWindow(bool attack = true, string spellName = null)
+    {
+        targetAttackMenu.SetActive(true);
+
+        if (targetAttackButtons.Count > 0)
+        {
+            targetAttackButtons.ForEach(tb => Destroy(tb.gameObject));
+            targetAttackButtons.Clear();
+        }
+
+        // loop through activeBattleCharacters
+        for (int i = 0; i < activeBattleCharacters.Count; i++)
+        {
+            if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.enemy)
+            {
+                // if the character on the i-th index is an enemy, instantiate a targetButton for that enemy
+                // and set its text to be their name and add the PlayerAttack() func. listener:
+                int index = i;
+                Button targetButton = Instantiate(targetButtonPrefab, targetButtonsParent);
+                targetButton.GetComponentInChildren<TextMeshProUGUI>()?.SetText(activeBattleCharacters[i].CharacterName);
+
+                targetButton.onClick.RemoveAllListeners();
+
+                if (attack)
+                    targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: "slash", targetIndex: index)));
+
+                else if (!attack && !string.IsNullOrEmpty(spellName))
+                    targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: spellName, targetIndex: index)));
+
+                targetAttackButtons.Add(targetButton);
+            }
+        }
+    }
+
+    void PopulateBattleItemsWindow()
+    {
         if (itemButtons.Count > 0)
         {
             itemButtons.ForEach(ib => Destroy(ib.gameObject));
@@ -594,27 +603,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void SelectItem(ItemScriptable itemDetails)
-    {
-        //CloseUseForWindow();
-
-        selectedItemDetails = itemDetails;
-        //itemWindowNameText.SetText(itemDetails.ItemName);
-        //itemWindowDescText.SetText(itemDetails.Description);
-
-        //// show the use & discard buttons only when an item is selected:
-        //useForWindowButton.gameObject.SetActive(true);
-        //discardButton.gameObject.SetActive(true);
-
-        //// if the item is a consumable, change the use button's text to "USE":
-        //if (selectedItemDetails.ItemType != Item.ItemType.weapon && selectedItemDetails.ItemType != Item.ItemType.armor)
-        //    useOrEquipButtonText.SetText("USE");
-
-        //// else if the item is a weapon/armor piece, change the use button's text to "EQUIP":
-        //else
-        //    useOrEquipButtonText.SetText("EQUIP");
-    }
-
     void OpenUseForWindow()
     {
         if (selectedItemDetails)
@@ -631,14 +619,50 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    void CloseUseForWindow()
-    {
-        useForMenu.SetActive(false);
-    }
-
     void CloseMagicWindow() => magicMenu.SetActive(false);
 
     void SetCurrentTurnText(string name) => currentTurnText.SetText("CURRENT TURN: " + name);
+
+    void UseBattleItem(int _charToUseOnIndex, int _quantityToUse)
+    {
+        Debug.Log("called. _charToUseOnIndex: " + _charToUseOnIndex);
+        GameManager.instance.UseItemInInvetory(charToUseOnIndex: _charToUseOnIndex,
+                                               itemToUseDetails: selectedItemDetails, quantityToUse: _quantityToUse);
+
+        PopulateBattleItemsWindow();
+        UpdateUIStats();
+    }
+
+    void AssignListenersToButtons()
+    { 
+        attackButton.onClick.RemoveAllListeners();
+        useButton1.onClick.RemoveAllListeners();
+        useButton2.onClick.RemoveAllListeners();
+        useButton3.onClick.RemoveAllListeners();
+
+        attackButton.onClick.AddListener(() => OpenAttackWindow()); // simple slash attack  
+        useButton1.onClick.AddListener(() => UseBattleItem(_charToUseOnIndex: 0, _quantityToUse: 1));
+        useButton2.onClick.AddListener(() => UseBattleItem(_charToUseOnIndex: 1, _quantityToUse: 1));
+        useButton3.onClick.AddListener(() => UseBattleItem(_charToUseOnIndex: 2, _quantityToUse: 1));
+    }
+
+    void UpdateCorrespondingPlayerStats(BattleCharacter battleCharacter)
+    {
+        for (int j = 0; j < GameManager.instance.PlayerStatsList.Length; j++)
+        {
+            if (battleCharacter.CharacterName == GameManager.instance.PlayerStatsList[j].characterName)
+            {
+                GameManager.instance.PlayerStatsList[j].currentHP = battleCharacter.CurrentHP;
+                GameManager.instance.PlayerStatsList[j].currentMP = battleCharacter.CurrentMP;
+                GameManager.instance.PlayerStatsList[j].maxHP = battleCharacter.MaxHP;
+                GameManager.instance.PlayerStatsList[j].maxMP = battleCharacter.MaxMP;
+                GameManager.instance.PlayerStatsList[j].strength = battleCharacter.Str;
+                GameManager.instance.PlayerStatsList[j].defence = battleCharacter.Def;
+                GameManager.instance.PlayerStatsList[j].weaponPower = battleCharacter.WpnPower;
+                GameManager.instance.PlayerStatsList[j].armorPower = battleCharacter.ArmrPower;
+            }
+        }
+    }
 
     IEnumerator ShowAttackTextCR(TextMeshProUGUI text, string _msg, float activeTime = 1)
     {
@@ -649,22 +673,6 @@ public class BattleManager : MonoBehaviour
         text.gameObject.SetActive(false);
 
         yield break;
-    }
-
-    void AssignListenersToButtons()
-    {
-        useButton1.onClick.RemoveAllListeners();
-        useButton2.onClick.RemoveAllListeners();
-        useButton3.onClick.RemoveAllListeners();
-
-        useButton1.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 0, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
-        useButton1.onClick.AddListener(UpdateUIStats);
-
-        useButton2.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 1, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
-        useButton2.onClick.AddListener(UpdateUIStats);
-
-        useButton3.onClick.AddListener(() => GameManager.instance.UseItemInInvetory(charToUseOnIndex: 2, itemToUseDetails: selectedItemDetails, quantityToUse: 1));
-        useButton3.onClick.AddListener(UpdateUIStats);
     }
     #endregion
 }

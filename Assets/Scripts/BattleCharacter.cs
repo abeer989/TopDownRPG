@@ -45,17 +45,6 @@ public class BattleCharacter : MonoBehaviour
         enemy
     }
 
-    GameObject attackIndicatorCanvas;
-
-    private void OnEnable()
-    {
-        if (attackIndicatorCanvasPrefab)
-        {
-            attackIndicatorCanvas = Instantiate(attackIndicatorCanvasPrefab, transform);
-            //attackIndicatorCanvasPrefab.transform.SetParent(transform); 
-        }
-    }
-
     public void SetUpBattleCharacter(PlayerStats _stats, bool _isDead = false)
     {
         characterName = _stats.characterName;
@@ -68,11 +57,5 @@ public class BattleCharacter : MonoBehaviour
         wpnPower = _stats.weaponPower;
         armrPower = _stats.armorPower;
         isDead = _isDead;
-    }
-
-    public void ToggleAttackCanvas(bool state)
-    {
-        if(attackIndicatorCanvas != null)
-            attackIndicatorCanvas.SetActive(state);
     }
 }
