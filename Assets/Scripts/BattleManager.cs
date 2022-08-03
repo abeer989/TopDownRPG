@@ -200,6 +200,10 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// generate a random number and check if its lesser than the fleeChance,
+    /// if it is, the player is allowed to flee and the battle is immediately over (will be added to later):
+    /// </summary>
     public void Flee()
     {
         int rand = Random.Range(0, 101);
@@ -217,68 +221,9 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    void EnemyAttack()
-    {
-        // locking on to target:
-        List<int> playerIndices = new List<int>(); // an indices list to get the indices of all players in the activeBattleCharacters list
-
-        activeBattleCharacters.ForEach(ab =>
-        {
-            // loop through the activeBattleCharacters list and adding the index of every character who's a player
-            // in the playerIndices list:
-            if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
-                playerIndices.Add(activeBattleCharacters.IndexOf(ab));
-        });
-
-        // now that we have the player indices, we select a reandom one and take away x amount of HP from them:
-        int targetIndex = playerIndices[Random.Range(0, playerIndices.Count)];
-
-        // choose a random attack (string -- name of attack) from the activeBC's movesAvailable list:
-        int attackIndex = Random.Range(0, activeBattleCharacters[currentTurn].MovesAvailable.Length);
-
-        // cache:
-        BattleMove selectedMove = null;
-
-        // loop through the moveList and check if an attack of the same name exists in there
-        if (activeBattleCharacters[currentTurn].MovesAvailable.Length > 0)
-        {
-            for (int i = 0; i < moveList.Count; i++)
-            {
-                // if it doesn, cache it in the selectedAttack var:
-                if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[attackIndex].Trim()))
-                {
-                    selectedMove = moveList[i];
-                    break;
-                }
-            }
-        }
-
-        else
-            Debug.LogError("NO MOVES AVAILABLE FOR: " + activeBattleCharacters[currentTurn].CharacterName);
-
-        //Debug.LogError(selectedMove);
-        if (selectedMove != null)
-        {
-            // inflict status effects from that selectedAttack:
-            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
-            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
-            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
-
-            string msg = activeBattleCharacters[currentTurn].CharacterName
-                         + " used "
-                         + selectedMove.MoveName
-                         + " on "
-                         + activeBattleCharacters[targetIndex].CharacterName
-                         + ".";
-
-            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
-            UpdateUIStats();
-            StartCoroutine(ShowAttackTextCR(text: enemyAttackText, _msg: msg, activeTime: 2));
-        }
-    }
-
     /// <summary>
-    /// increment the turn counter and initiate the next turn:
+    /// increment the turn counter and initiate the next turn,
+    /// update the battle state (dead characters, etc.), update UI stats, etc:
     /// </summary>
     void StartNextTurn()
     {
@@ -312,16 +257,26 @@ public class BattleManager : MonoBehaviour
 
             if (activeBattleCharacters[i].CurrentHP == 0)
             {
-                // handle dead battler
+                if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.player)
+                    activeBattleCharacters[i].SetState(dead: true);
+
+                else
+                    activeBattleCharacters[i].EnemyFade();
             }
 
             else
             {
                 if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.player)
+                {
+                    activeBattleCharacters[i].SetState(dead: false);
                     allPlayersDead = false;
+                }
 
                 else if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.enemy)
+                {
+
                     allEnemiesDead = false;
+                }
             }
         }
 
@@ -355,20 +310,29 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// general-purpose func. used to deal damage to an active battle char. (enemy or player):
+    /// </summary>
+    /// <param name="_targetIndex"></param>
+    /// <param name="movePower"></param>
+    /// <returns></returns>
     int DealDamage(int _targetIndex, int movePower)
     {
+        // toootally original damage calc. formula:
         float attackPower = activeBattleCharacters[currentTurn].Str + activeBattleCharacters[currentTurn].WpnPower;
         float targetDefense = activeBattleCharacters[_targetIndex].Def + activeBattleCharacters[_targetIndex].ArmrPower;
         int damage = Mathf.RoundToInt((attackPower / targetDefense) * movePower * Random.Range(.9f, 1.1f));
 
         Debug.Log(activeBattleCharacters[currentTurn] + " dealt " + damage + " damage to " + activeBattleCharacters[_targetIndex]);
+
+        // show floating damage numbers:
         Instantiate(damageNumberCanvas, activeBattleCharacters[_targetIndex].transform.position, activeBattleCharacters[_targetIndex].transform.rotation).SetDamageValue(damage);
         UpdateUIStats();
 
         return damage;
     }
 
-    IEnumerator PlayerAttack(string moveName, int targetIndex)
+    IEnumerator PlayerAttackCR(string moveName, int targetIndex)
     {
         targetAttackMenu.SetActive(false);
         attackButton.interactable = false;
@@ -429,6 +393,72 @@ public class BattleManager : MonoBehaviour
         yield break;
     }
 
+    /// <summary>
+    /// the function responsible for making enemies attack the player characters:
+    /// </summary>
+    void EnemyAttack()
+    {
+        // locking on to target:
+        List<int> playerIndices = new List<int>(); // an indices list to get the indices of all players in the activeBattleCharacters list
+
+        activeBattleCharacters.ForEach(ab =>
+        {
+            // loop through the activeBattleCharacters list and adding the index of every character who's a player
+            // in the playerIndices list:
+            if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
+            {
+                if(ab.CurrentHP > 0)
+                    playerIndices.Add(activeBattleCharacters.IndexOf(ab));
+            }
+        });
+
+        // now that we have the player indices, we select a reandom one and take away x amount of HP from them:
+        int targetIndex = playerIndices[Random.Range(0, playerIndices.Count)];
+
+        // choose a random attack (string -- name of attack) from the activeBC's movesAvailable list:
+        int attackIndex = Random.Range(0, activeBattleCharacters[currentTurn].MovesAvailable.Length);
+
+        // cache:
+        BattleMove selectedMove = null;
+
+        // loop through the moveList and check if an attack of the same name exists in there
+        if (activeBattleCharacters[currentTurn].MovesAvailable.Length > 0)
+        {
+            for (int i = 0; i < moveList.Count; i++)
+            {
+                // if it does, cache it in the selectedAttack var:
+                if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[attackIndex].Trim()))
+                {
+                    selectedMove = moveList[i];
+                    break;
+                }
+            }
+        }
+
+        else
+            Debug.LogError("NO MOVES AVAILABLE FOR: " + activeBattleCharacters[currentTurn].CharacterName);
+
+        //Debug.LogError(selectedMove);
+        if (selectedMove != null)
+        {
+            // inflict status effects from that selectedAttack:
+            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
+            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
+            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
+
+            string msg = activeBattleCharacters[currentTurn].CharacterName
+                         + " used "
+                         + selectedMove.MoveName
+                         + " on "
+                         + activeBattleCharacters[targetIndex].CharacterName
+                         + ".";
+
+            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
+            UpdateUIStats();
+            StartCoroutine(ShowAttackTextCR(text: enemyAttackText, _msg: msg, activeTime: 2));
+        }
+    }
+
     IEnumerator EnemyAttackDelayCR()
     {
         waitingForNextTurn = false;
@@ -436,6 +466,13 @@ public class BattleManager : MonoBehaviour
         EnemyAttack();
         yield return new WaitForSeconds(2);
         StartNextTurn();
+
+        yield break;
+    }
+
+    IEnumerator EndBattleCR()
+    {
+
 
         yield break;
     }
@@ -521,7 +558,7 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// open target select window:
+    /// open battle items window:
     /// </summary>
     public void OpenBattleItemsWindow()
     {
@@ -529,15 +566,36 @@ public class BattleManager : MonoBehaviour
         PopulateBattleItemsWindow();
     }
 
+    /// <summary>
+    /// set the selected item that is to be used on a character:
+    /// </summary>
+    /// <param name="itemDetails"></param>
     public void SelectItem(ItemScriptable itemDetails) => selectedItemDetails = itemDetails;
 
+    /// <summary>
+    /// clear selected item:
+    /// </summary>
     public void ClearSelectedItem() => selectedItemDetails = null;
 
+    void CloseBattleItemsWindow()
+    {
+        itemsMenu.SetActive(false);
+        CloseUseForWindow();
+    }
+
+    /// <summary>
+    /// close the "Use For?" window:
+    /// </summary>
     public void CloseUseForWindow()
     {
         useForMenu.SetActive(false);
         ClearSelectedItem();
     }
+
+    /// <summary>
+    /// close the magic window that shows all the spells available on the player:
+    /// </summary>
+    void CloseMagicWindow() => magicMenu.SetActive(false);
 
     /// <summary>
     /// open target select window:
@@ -557,25 +615,31 @@ public class BattleManager : MonoBehaviour
         {
             if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.enemy)
             {
-                // if the character on the i-th index is an enemy, instantiate a targetButton for that enemy
-                // and set its text to be their name and add the PlayerAttack() func. listener:
-                int index = i;
-                Button targetButton = Instantiate(targetButtonPrefab, targetButtonsParent);
-                targetButton.GetComponentInChildren<TextMeshProUGUI>()?.SetText(activeBattleCharacters[i].CharacterName);
+                if (activeBattleCharacters[i].CurrentHP > 0)
+                {
+                    // if the character on the i-th index is an enemy, instantiate a targetButton for that enemy
+                    // and set its text to be their name and add the PlayerAttack() func. listener:
+                    int index = i;
+                    Button targetButton = Instantiate(targetButtonPrefab, targetButtonsParent);
+                    targetButton.GetComponentInChildren<TextMeshProUGUI>()?.SetText(activeBattleCharacters[i].CharacterName);
 
-                targetButton.onClick.RemoveAllListeners();
+                    targetButton.onClick.RemoveAllListeners();
 
-                if (attack)
-                    targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: "slash", targetIndex: index)));
+                    if (attack)
+                        targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttackCR(moveName: "slash", targetIndex: index)));
 
-                else if (!attack && !string.IsNullOrEmpty(spellName))
-                    targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttack(moveName: spellName, targetIndex: index)));
+                    else if (!attack && !string.IsNullOrEmpty(spellName))
+                        targetButton.onClick.AddListener(() => StartCoroutine(PlayerAttackCR(moveName: spellName, targetIndex: index)));
 
-                targetAttackButtons.Add(targetButton);
+                    targetAttackButtons.Add(targetButton); 
+                }
             }
         }
     }
 
+    /// <summary>
+    /// get all the items from the player inventory and populate the whole battle items window:
+    /// </summary>
     void PopulateBattleItemsWindow()
     {
         if (itemButtons.Count > 0)
@@ -603,6 +667,9 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// open the "Use For?" window that lets user select which player, the selectedItem will be used on:
+    /// </summary>
     void OpenUseForWindow()
     {
         if (selectedItemDetails)
@@ -619,18 +686,27 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    void CloseMagicWindow() => magicMenu.SetActive(false);
-
+    /// <summary>
+    /// sets the text for a text on the UI that lets the user know whose turn it is currently:
+    /// </summary>
+    /// <param name="name"></param>
     void SetCurrentTurnText(string name) => currentTurnText.SetText("CURRENT TURN: " + name);
 
+    /// <summary>
+    /// use battleItem on player:
+    /// </summary>
+    /// <param name="_charToUseOnIndex"></param>
+    /// <param name="_quantityToUse"></param>
     void UseBattleItem(int _charToUseOnIndex, int _quantityToUse)
     {
-        Debug.Log("called. _charToUseOnIndex: " + _charToUseOnIndex);
+        //Debug.Log("called. _charToUseOnIndex: " + _charToUseOnIndex);
         GameManager.instance.UseItemInInvetory(charToUseOnIndex: _charToUseOnIndex,
                                                itemToUseDetails: selectedItemDetails, quantityToUse: _quantityToUse);
 
-        PopulateBattleItemsWindow();
-        UpdateUIStats();
+        PopulateBattleItemsWindow(); // update item count on battle UI as it is in the inv.
+        UpdateUIStats(); // update all stats after item usage
+        StartNextTurn();
+        CloseBattleItemsWindow();
     }
 
     void AssignListenersToButtons()

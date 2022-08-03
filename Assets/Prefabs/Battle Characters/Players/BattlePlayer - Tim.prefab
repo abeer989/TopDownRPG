@@ -97,7 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 419fd47487758f642a8d7a81ea53fe8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackIndicatorCanvasPrefab: {fileID: 0}
+  sprites:
+  - {fileID: 21300024, guid: e0ddba6d3fcf21f49949fcc95c849aac, type: 3}
+  - {fileID: 21300046, guid: e0ddba6d3fcf21f49949fcc95c849aac, type: 3}
   characterType: 0
   characterName: Tim
   movesAvailable:

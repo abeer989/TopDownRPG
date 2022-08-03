@@ -115,7 +115,11 @@ public class UIController : MonoBehaviour
         // toggling menu:
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!menuPanel.activeInHierarchy && !GameManager.instance.shopActive && !GameManager.instance.dialogActive && !GameManager.instance.switchingScenes)
+            if (!menuPanel.activeInHierarchy
+                && !GameManager.instance.shopActive
+                && !GameManager.instance.dialogActive
+                && !GameManager.instance.switchingScenes
+                && !GameManager.instance.battleActive)
             {
                 menuPanel.SetActive(true);
                 Time.timeScale = 0;
@@ -510,7 +514,7 @@ public class UIController : MonoBehaviour
     public void CallGameSavedMessageCR() => StartCoroutine(ShowMessageCR(gameSavedText));
 
     /// <summary>
-    /// generic coroutine for fading in/out a TextMeshProUGUI text oject:
+    /// generic coroutine for fading in/out a TextMeshProUGUI object:
     /// </summary>
     IEnumerator ShowMessageCR(TextMeshProUGUI text, string _message = "")
     {

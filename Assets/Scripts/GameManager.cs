@@ -88,32 +88,7 @@ public class GameManager : MonoBehaviour
 
     #region Inventory Management
     /// <summary>
-    /// returns an item's quantity in the inventory:
-    /// </summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public int GetItemQuantity(ItemScriptable item)
-    {
-        int index = 0;
-        int itemQuantityInInventory = 0;
-
-        foreach (ItemScriptable i in itemsHeldDetails)
-        {
-            if (i.ItemName == item.ItemName)
-            {
-                index = itemsHeldDetails.IndexOf(i);
-                break;
-            }
-        }
-
-        if (index < quantitiesOfItemsHeld.Count)
-            itemQuantityInInventory = quantitiesOfItemsHeld[index];
-
-        return itemQuantityInInventory;
-    }
-
-    /// <summary>
-    /// adds and item to the inventory (e.g.: picking up and item in the world, buying for a vendor, etc.)
+    /// adds an item to the inventory (e.g.: picking up and item in the world, buying from a vendor, etc.)
     /// </summary>
     /// <param name="itemToAddDetails"></param>
     /// <param name="itemQuantity"></param>
@@ -146,7 +121,8 @@ public class GameManager : MonoBehaviour
         {
             itemsHeldDetails.Add(itemToAddDetails);
             quantitiesOfItemsHeld.Add(itemQuantity);
-            UIController.instance.CreateOrUpdateCorrespondingInventoryButton(itemDetailsOnButton: itemToAddDetails, quantityOnButton: itemQuantity);
+            UIController.instance.CreateOrUpdateCorrespondingInventoryButton(itemDetailsOnButton: itemToAddDetails,
+                                                                             quantityOnButton: itemQuantity);
         }
 
         else
@@ -157,7 +133,8 @@ public class GameManager : MonoBehaviour
             {
                 quantitiesOfItemsHeld[itemDetailsIndex] += itemQuantity;
                 // send updated quantity to button:
-                UIController.instance.CreateOrUpdateCorrespondingInventoryButton(itemDetailsOnButton: itemToAddDetails, quantityOnButton: quantitiesOfItemsHeld[itemDetailsIndex]);
+                UIController.instance.CreateOrUpdateCorrespondingInventoryButton(itemDetailsOnButton: itemToAddDetails,
+                                                                                 quantityOnButton: quantitiesOfItemsHeld[itemDetailsIndex]);
             }
         }
     }
@@ -306,6 +283,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// clear out inventory completely with their quantities by running the discard func. again & again
+    /// till everything has been cleared into oblivion:
+    /// </summary>
     public void ClearInventoryCompletely()
     {
         int whileBreaker = 0;
@@ -540,6 +521,31 @@ public class GameManager : MonoBehaviour
 
     #region Helpers
     /// <summary>
+    /// returns an item's quantity in the inventory:
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public int GetItemQuantity(ItemScriptable item)
+    {
+        int index = 0;
+        int itemQuantityInInventory = 0;
+
+        foreach (ItemScriptable i in itemsHeldDetails)
+        {
+            if (i.ItemName == item.ItemName)
+            {
+                index = itemsHeldDetails.IndexOf(i);
+                break;
+            }
+        }
+
+        if (index < quantitiesOfItemsHeld.Count)
+            itemQuantityInInventory = quantitiesOfItemsHeld[index];
+
+        return itemQuantityInInventory;
+    }
+
+    /// <summary>
     /// a helper function that converts a properly formatted string to a Vector3:
     /// </summary>
     /// <param name="sVector"></param>
@@ -562,14 +568,19 @@ public class GameManager : MonoBehaviour
         return result;
     }
 
-    void UpdateCorrespondingBattleCharacter(PlayerStats player)
+    /// <summary>
+    /// this function sends the most updated info of the overworld player to its BattleCharacter counterpart
+    /// so, health, MP, str, def, etc. all remain synced for both:
+    /// </summary>
+    /// <param name="playerStats"></param>
+    void UpdateCorrespondingBattleCharacter(PlayerStats playerStats)
     {
-        for (int j = 0; j < BattleManager.instance.ActiveBattleCharacters.Count; j++)
+        for (int i = 0; i < BattleManager.instance.ActiveBattleCharacters.Count; i++)
         {
-            if (BattleManager.instance.ActiveBattleCharacters[j].CharacterType == BattleCharacter.BattleCharacterType.player)
+            if (BattleManager.instance.ActiveBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.player)
             {
-                if (player.characterName == BattleManager.instance.ActiveBattleCharacters[j].CharacterName)
-                    BattleManager.instance.ActiveBattleCharacters[j].SetUpBattleCharacter(player);
+                if (playerStats.characterName == BattleManager.instance.ActiveBattleCharacters[i].CharacterName)
+                    BattleManager.instance.ActiveBattleCharacters[i].SetUpBattleCharacter(playerStats);
             }
         }
     }

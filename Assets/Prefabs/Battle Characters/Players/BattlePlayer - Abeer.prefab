@@ -97,7 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 419fd47487758f642a8d7a81ea53fe8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackIndicatorCanvasPrefab: {fileID: 0}
+  sprites:
+  - {fileID: 257862381, guid: c1db4699ec9128f41af18ab04aae681e, type: 3}
+  - {fileID: -505285946, guid: c1db4699ec9128f41af18ab04aae681e, type: 3}
   characterType: 0
   characterName: Abeer
   movesAvailable:

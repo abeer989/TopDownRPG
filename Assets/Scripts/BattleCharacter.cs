@@ -2,17 +2,24 @@ using UnityEngine;
 
 public class BattleCharacter : MonoBehaviour
 {
-    [SerializeField] GameObject attackIndicatorCanvasPrefab;
+    [SerializeField] Sprite[] sprites;
 
+    [Space]
     [SerializeField] BattleCharacterType characterType;
     [SerializeField] string characterName;
 
     [Space]
     [SerializeField] string[] movesAvailable;
     [SerializeField] int currentHP, maxHP, currentMP, maxMP, str, def, wpnPower, armrPower;
+
+    [Space]
+    [SerializeField] float fadeSpeed;
     
     [Space]
     [SerializeField] bool isDead;
+
+    SpriteRenderer spriteRenderer;
+    bool shouldFade = false;
 
     // public properties:
     public BattleCharacterType CharacterType { get { return characterType; } }
@@ -45,6 +52,25 @@ public class BattleCharacter : MonoBehaviour
         enemy
     }
 
+    private void Start() => spriteRenderer = GetComponent<SpriteRenderer>();
+
+    private void Update()
+    {
+        if (shouldFade)
+        {
+            spriteRenderer.color = new Color(r: Mathf.MoveTowards(spriteRenderer.color.r, 1, fadeSpeed * Time.deltaTime),
+                                             g: Mathf.MoveTowards(spriteRenderer.color.g, 0, fadeSpeed * Time.deltaTime),
+                                             b: Mathf.MoveTowards(spriteRenderer.color.b, 0, fadeSpeed * Time.deltaTime),
+                                             a: Mathf.MoveTowards(spriteRenderer.color.a, 0, fadeSpeed * Time.deltaTime));
+
+            if (spriteRenderer.color.a <= 0)
+            {
+                shouldFade = false;
+                gameObject.SetActive(false);
+            }
+        }
+    }
+
     public void SetUpBattleCharacter(PlayerStats _stats, bool _isDead = false)
     {
         characterName = _stats.characterName;
@@ -58,4 +84,21 @@ public class BattleCharacter : MonoBehaviour
         armrPower = _stats.armorPower;
         isDead = _isDead;
     }
+
+    public void SetState(bool dead = true)
+    {
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (sprites != null && sprites.Length > 0)
+        {
+            if (dead)
+                spriteRenderer.sprite = sprites[1]; // dead sprite
+
+            else
+                spriteRenderer.sprite = sprites[0]; // alive sprite 
+        }
+    }
+
+    public void EnemyFade() => shouldFade = true;
 }

@@ -97,17 +97,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 419fd47487758f642a8d7a81ea53fe8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackIndicatorCanvasPrefab: {fileID: 1183181377783747915, guid: 4fa84621d1cb5274fab3144ac2395237, type: 3}
+  sprites: []
   characterType: 1
   characterName: Eyeball
   movesAvailable:
   - plasma
-  currentHP: 150
-  maxHP: 150
-  currentMP: 50
-  maxMP: 50
-  str: 5
-  def: 5
-  wpnPower: 5
-  armrPower: 5
+  currentHP: 50
+  maxHP: 50
+  currentMP: 20
+  maxMP: 20
+  str: 2
+  def: 2
+  wpnPower: 2
+  armrPower: 2
+  fadeSpeed: 1
   isDead: 0
