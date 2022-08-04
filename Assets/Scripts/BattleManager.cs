@@ -3,15 +3,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class BattleManager : MonoBehaviour
 {
     #region Var./Ref.
     public static BattleManager instance;
 
+    [SerializeField] int gameOverSceneIndex;
+    [SerializeField] int fleeChance;
+
+    [Space]
     [SerializeField] GameObject battleScene;
     [SerializeField] GameObject actionsMenu;
     [SerializeField] BattleNotification battleNotif;
+    [SerializeField] ShowDamageNumbers damageNumberCanvas;
 
     [Header("Target Menu")]
     [SerializeField] GameObject targetAttackMenu;
@@ -38,19 +44,14 @@ public class BattleManager : MonoBehaviour
     [SerializeField] Button useButton3;
     [SerializeField] List<TextMeshProUGUI> useForWindowButtonLabels;
 
-    [Header("Flee")]
-    [SerializeField] int fleeChance;
-
-    [Space]
-    [SerializeField] ShowDamageNumbers damageNumberCanvas;
-
     [Space]
     [Header("Texts")]
     [SerializeField] TextMeshProUGUI currentTurnText;
     [SerializeField] TextMeshProUGUI playerAttackText;
     [SerializeField] TextMeshProUGUI enemyAttackText;
 
-    [Header("Stats UI Texts")]
+    [Header("Stats Window")]
+    [SerializeField] GameObject statsWindow;
     [SerializeField] List<TextMeshProUGUI> playerNameTexts;
     [SerializeField] List<TextMeshProUGUI> playerHPTexts;
     [SerializeField] List<TextMeshProUGUI> playerMPTexts;
@@ -159,6 +160,7 @@ public class BattleManager : MonoBehaviour
                 cameraPos = new Vector3(cam.transform.localPosition.x, cam.transform.localPosition.y, battleScene.transform.localPosition.z);
                 battleScene.transform.localPosition = cameraPos;
                 battleScene.SetActive(true);
+                ToggleAllBattleUI(true);
                 AudioManager.instance.PlayMusic(0); // play battle music
 
                 // spawning players at the correct positions in battle:
@@ -210,8 +212,8 @@ public class BattleManager : MonoBehaviour
 
         if (rand < fleeChance)
         {
-            GameManager.instance.battleActive = false;
-            battleScene.SetActive(false);
+            battleNotif.Activate("YOU ESCAPED!");
+            StartCoroutine(EndBattleCR());
         }
 
         else
@@ -273,27 +275,17 @@ public class BattleManager : MonoBehaviour
                 }
 
                 else if (activeBattleCharacters[i].CharacterType == BattleCharacter.BattleCharacterType.enemy)
-                {
-
                     allEnemiesDead = false;
-                }
             }
         }
 
         if (allEnemiesDead || allPlayersDead)
         {
-            battleScene.gameObject.SetActive(false);
-            GameManager.instance.battleActive = false;
-
-            if (allPlayersDead)
-            {
-                // battle failure
-            }
+            if (allEnemiesDead)
+                StartCoroutine(EndBattleCR());
 
             else
-            {
-                // victory
-            }
+                StartCoroutine(GameOverCR());
         }
 
         else
@@ -459,6 +451,39 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    void ToggleAllBattleUI(bool state)
+    {
+        actionsMenu.SetActive(state);
+        statsWindow.SetActive(state);
+        currentTurnText.gameObject.SetActive(state);
+
+        if (!state)
+        {
+            targetAttackMenu.SetActive(state);
+            magicMenu.SetActive(state);
+            useForMenu.SetActive(state);
+            itemsMenu.SetActive(state);
+            battleNotif.gameObject.SetActive(false);
+
+            playerAttackText.gameObject.SetActive(state);
+            enemyAttackText.gameObject.SetActive(state); 
+        }
+    }
+
+    /// <summary>
+    /// clear all battle character so that when another battle is started, the characters
+    /// from the prev. battle don't persist in the scene:
+    /// </summary>
+    void DestroyAllBattleCharacters()
+    {
+        activeBattleCharacters.ForEach(ab => Destroy(ab.gameObject));
+        activeBattleCharacters.Clear();
+    }
+
+    /// <summary>
+    /// CR to create a delay between enemy turns to give the battle a smoother flow:
+    /// </summary>
+    /// <returns></returns>
     IEnumerator EnemyAttackDelayCR()
     {
         waitingForNextTurn = false;
@@ -470,9 +495,63 @@ public class BattleManager : MonoBehaviour
         yield break;
     }
 
+    /// <summary>
+    /// CR called to end battle normally (player wins). 
+    /// Resets various values back to their initial states, clears out active battle char.s, etc.:
+    /// </summary>
+    /// <returns></returns>
     IEnumerator EndBattleCR()
     {
+        GameManager.instance.battleActive = false;
 
+        yield return new WaitForSeconds(1);
+
+        ToggleAllBattleUI(false); // UI will be disabled after 1 second
+
+        yield return new WaitForSeconds(1f); // screen will fade to black, one second after that
+
+        UIController.instance.FadeToBlack();
+
+        yield return new WaitForSeconds(1.5f); // all characters will be destroyed, 1.5 seconds after that
+
+        // update all corresponding player stats on the GameManager for every player char.:
+        activeBattleCharacters.ForEach(ab =>
+        {
+            if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
+                UpdateCorrespondingPlayerStats(ab);
+        });
+
+        battleScene.SetActive(false);
+        DestroyAllBattleCharacters();
+        currentTurn = 0;
+
+        UIController.instance.FadeFromBlack();
+        AudioManager.instance.PlayMusic(FindObjectOfType<MainCameraController>().MusicIndex); // revert to playing scene music
+
+        yield break;
+    }
+
+    /// <summary>
+    /// CR called when game is over (player loses battle).
+    /// Resets various values back to their initial states, clears out active battle char.s, etc.:
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator GameOverCR()
+    {
+        GameManager.instance.battleActive = false;
+
+        yield return new WaitForSeconds(1);
+
+        ToggleAllBattleUI(false); // UI will be disabled after 1 second
+        battleScene.SetActive(false);
+
+        yield return new WaitForSeconds(.5f);
+
+        UIController.instance.FadeToBlack();
+
+        yield return new WaitForSeconds(1.5f);
+
+        SceneManager.LoadScene(gameOverSceneIndex);
 
         yield break;
     }
@@ -709,6 +788,9 @@ public class BattleManager : MonoBehaviour
         CloseBattleItemsWindow();
     }
 
+    /// <summary>
+    /// function thats assigns functions to relevant buttons:
+    /// </summary>
     void AssignListenersToButtons()
     { 
         attackButton.onClick.RemoveAllListeners();
@@ -722,6 +804,10 @@ public class BattleManager : MonoBehaviour
         useButton3.onClick.AddListener(() => UseBattleItem(_charToUseOnIndex: 2, _quantityToUse: 1));
     }
 
+    /// <summary>
+    /// function that communicates all of the stats changes made within a battle to the playerstats on the GameManager:
+    /// </summary>
+    /// <param name="battleCharacter"></param>
     void UpdateCorrespondingPlayerStats(BattleCharacter battleCharacter)
     {
         for (int j = 0; j < GameManager.instance.PlayerStatsList.Length; j++)

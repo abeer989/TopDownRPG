@@ -13,6 +13,11 @@ public class MainCameraController : MonoBehaviour
     [Space]
     [SerializeField] int musicIndex;
 
+    public int MusicIndex
+    {
+        get { return musicIndex; }
+    }
+
     private void Awake()
     {
         cameraBoundsBox.gameObject.transform.SetParent(transform.parent);

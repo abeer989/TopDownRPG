@@ -186,6 +186,9 @@ public class UIController : MonoBehaviour
         Destroy(AudioManager.instance.gameObject);
         AudioManager.instance = null;
 
+        Destroy(BattleManager.instance.gameObject);
+        BattleManager.instance = null;
+
         SceneManager.LoadScene(mainMenuSceneIndex);
 
         Destroy(gameObject);

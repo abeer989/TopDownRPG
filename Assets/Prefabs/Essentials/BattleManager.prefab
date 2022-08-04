@@ -2859,10 +2859,10 @@ RectTransform:
   m_Father: {fileID: 4965103362509780102}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 184.42105, y: -50}
-  m_SizeDelta: {x: 350, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4965103361689117334
 CanvasRenderer:
@@ -3126,9 +3126,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba96ec912e0ad4d4dabe3ce6a19ce21c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameOverSceneIndex: 6
+  fleeChance: 40
   battleScene: {fileID: 4965103362796737407}
   actionsMenu: {fileID: 4965103362834909055}
   battleNotif: {fileID: 540941755826806192}
+  damageNumberCanvas: {fileID: 7410972006831362647, guid: c293f4a43747439438a0d6c4a52213d9, type: 3}
   targetAttackMenu: {fileID: 393416214}
   targetButtonsParent: {fileID: 1158484979}
   attackButton: {fileID: 4965103361689117416}
@@ -3146,11 +3149,10 @@ MonoBehaviour:
   - {fileID: 3234297731925974782}
   - {fileID: 472882803528059446}
   - {fileID: 7059508491378389237}
-  fleeChance: 35
-  damageNumberCanvas: {fileID: 7410972006831362647, guid: c293f4a43747439438a0d6c4a52213d9, type: 3}
   currentTurnText: {fileID: 1972224781}
   playerAttackText: {fileID: 4965103362902184782}
   enemyAttackText: {fileID: 4965103361699854998}
+  statsWindow: {fileID: 4965103363338755126}
   playerNameTexts:
   - {fileID: 4965103363763844606}
   - {fileID: 4965103363529352513}
@@ -3192,15 +3194,15 @@ MonoBehaviour:
   - attackFX: {fileID: 7767929201380648828, guid: 99b160ec0c485a74ca1fb3ef31552076, type: 3}
     moveName: Flame Plume
     moveDamage: 40
-    moveCost: 15
+    moveCost: 5
   - attackFX: {fileID: 1382758998942336562, guid: 1975e61eda523144284b6aa4d00d385f, type: 3}
     moveName: Freeze
     moveDamage: 30
-    moveCost: 10
+    moveCost: 8
   - attackFX: {fileID: 6078476736415064182, guid: 563a18edf9486a74baa6a195f44a359c, type: 3}
     moveName: Plasma Faze
     moveDamage: 60
-    moveCost: 20
+    moveCost: 15
   FX:
   - {fileID: 6937932885622323083, guid: 36b400e0da746824bb38eafe98ae2549, type: 3}
 --- !u!1 &4965103361825831676
@@ -3238,9 +3240,9 @@ RectTransform:
   m_Father: {fileID: 4965103362963711251}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 855.66425, y: -29.965202}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 302.0177, y: 59.930405}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4965103361825831673
@@ -4389,10 +4391,10 @@ RectTransform:
   m_Father: {fileID: 4965103362509780102}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 184.42105, y: -165}
-  m_SizeDelta: {x: 350, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4965103362436654074
 CanvasRenderer:
@@ -5100,10 +5102,10 @@ RectTransform:
   m_Father: {fileID: 4965103362509780102}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 549.421, y: -50}
-  m_SizeDelta: {x: 350, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4965103362862158793
 CanvasRenderer:
@@ -5933,10 +5935,10 @@ RectTransform:
   m_Father: {fileID: 4965103362509780102}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 549.421, y: -165}
-  m_SizeDelta: {x: 350, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4965103363306498040
 CanvasRenderer:
@@ -6144,9 +6146,9 @@ RectTransform:
   m_Father: {fileID: 4965103362963711251}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 503.33655, y: -29.965202}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 302.0177, y: 59.930405}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4965103363529352512
@@ -6739,9 +6741,9 @@ RectTransform:
   m_Father: {fileID: 4965103362963711251}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 151.00885, y: -29.965202}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 302.0177, y: 59.930405}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4965103363763844605
