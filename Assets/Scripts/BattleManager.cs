@@ -79,6 +79,11 @@ public class BattleManager : MonoBehaviour
 
     int currentTurn;
     bool waitingForNextTurn;
+    bool fleeing;
+
+    // Rewards:
+    int expToReward_BM;
+    BattleRewardWithQuantity[] battleRewards_BM;
 
     public List<BattleCharacter> ActiveBattleCharacters
     {
@@ -175,7 +180,7 @@ public class BattleManager : MonoBehaviour
                                 BattleCharacter newPlayer = Instantiate(playerPrefabs[i], playerPositions[i].position, playerPositions[i].rotation, playerPositions[i]);
 
                                 PlayerStats stats = GameManager.instance.PlayerStatsList[i];
-                                newPlayer.SetUpBattleCharacter(_stats: stats, _isDead: false);
+                                newPlayer.SetUpBattleCharacter(_stats: stats);
 
                                 activeBattleCharacters.Add(newPlayer);
                             }
@@ -212,6 +217,7 @@ public class BattleManager : MonoBehaviour
 
         if (rand < fleeChance)
         {
+            fleeing = true;
             battleNotif.Activate("YOU ESCAPED!");
             StartCoroutine(EndBattleCR());
         }
@@ -502,8 +508,6 @@ public class BattleManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator EndBattleCR()
     {
-        GameManager.instance.battleActive = false;
-
         yield return new WaitForSeconds(1);
 
         ToggleAllBattleUI(false); // UI will be disabled after 1 second
@@ -524,6 +528,15 @@ public class BattleManager : MonoBehaviour
         battleScene.SetActive(false);
         DestroyAllBattleCharacters();
         currentTurn = 0;
+
+        if (fleeing)
+        {
+            GameManager.instance.battleActive = false;
+            fleeing = false;
+        }
+
+        else
+            BattleRewardManager.instance.OpenRewardsScreen(_EXPEarned: expToReward_BM, _rewardItems: battleRewards_BM);
 
         UIController.instance.FadeFromBlack();
         AudioManager.instance.PlayMusic(FindObjectOfType<MainCameraController>().MusicIndex); // revert to playing scene music
@@ -554,6 +567,14 @@ public class BattleManager : MonoBehaviour
         SceneManager.LoadScene(gameOverSceneIndex);
 
         yield break;
+    }
+    #endregion
+
+    #region Rewards
+    public void SetupBattleRewards(int _expToReward_BM, BattleRewardWithQuantity[] _battleRewards_BM)
+    {
+        expToReward_BM = _expToReward_BM;
+        battleRewards_BM = _battleRewards_BM;
     }
     #endregion
 

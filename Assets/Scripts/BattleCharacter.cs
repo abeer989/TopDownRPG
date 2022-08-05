@@ -15,8 +15,8 @@ public class BattleCharacter : MonoBehaviour
     [Space]
     [SerializeField] float fadeSpeed;
     
-    [Space]
-    [SerializeField] bool isDead;
+    //[Space]
+    //[SerializeField] bool isDead;
 
     SpriteRenderer spriteRenderer;
     bool shouldFade = false;
@@ -71,7 +71,7 @@ public class BattleCharacter : MonoBehaviour
         }
     }
 
-    public void SetUpBattleCharacter(PlayerStats _stats, bool _isDead = false)
+    public void SetUpBattleCharacter(PlayerStats _stats)
     {
         characterName = _stats.characterName;
         currentHP = _stats.currentHP;
@@ -82,7 +82,7 @@ public class BattleCharacter : MonoBehaviour
         def = _stats.defence;
         wpnPower = _stats.weaponPower;
         armrPower = _stats.armorPower;
-        isDead = _isDead;
+        //isDead = _isDead;
     }
 
     public void SetState(bool dead = true)

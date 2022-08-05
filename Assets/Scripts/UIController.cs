@@ -285,7 +285,7 @@ public class UIController : MonoBehaviour
     /// <summary>
     /// update player stats and reflect them on the main menu screen (char. info. holder boxes) properly:
     /// </summary>
-    void UpdateInfoHolderStats()
+    public void UpdateInfoHolderStats()
     {
         // copying over the playerStatsList from the GameManager which is a list of
         // the PlayerStats components attached to the diff. characters in-game: 
@@ -526,10 +526,10 @@ public class UIController : MonoBehaviour
 
         while (text.color.a < 1)
         {
-            text.color = new Color(text.color.r,
-                                   text.color.g,
-                                   text.color.b,
-                                   Mathf.MoveTowards(text.color.a, 1, Time.unscaledDeltaTime * messagTextFadeSpeed));
+            text.color = new Color(r: text.color.r,
+                                   g: text.color.g,
+                                   b: text.color.b,
+                                   a: Mathf.MoveTowards(text.color.a, 1, Time.unscaledDeltaTime * messagTextFadeSpeed));
 
             yield return null;
         }
@@ -542,10 +542,10 @@ public class UIController : MonoBehaviour
 
         while (text.color.a > 0)
         {
-            text.color = new Color(text.color.r,
-                                   text.color.g,
-                                   text.color.b,
-                                   Mathf.MoveTowards(text.color.a, 0, Time.unscaledDeltaTime * messagTextFadeSpeed));
+            text.color = new Color(r: text.color.r,
+                                   g: text.color.g,
+                                   b: text.color.b,
+                                   a: Mathf.MoveTowards(text.color.a, 0, Time.unscaledDeltaTime * messagTextFadeSpeed));
 
             yield return null;
         }
