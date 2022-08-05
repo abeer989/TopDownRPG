@@ -15169,11 +15169,15 @@ MonoBehaviour:
   EXPText: {fileID: 1364685858}
   itemsPillagedParent: {fileID: 1563323458}
   battleRewardPrefab: {fileID: 1545842062948788817, guid: 1fc458d04d4aa0140abf39372b179af0, type: 3}
-  rewards:
-  - {fileID: 11400000, guid: 5ac0a3ecdada491498442c448820cef0, type: 2}
-  - {fileID: 11400000, guid: 68a89b1d4a07653419d0ff4f862b7756, type: 2}
-  - {fileID: 11400000, guid: da96023b999abf944a02cb2053b38cf4, type: 2}
-  quan: 030000000500000006000000
+  rewardItemsTest:
+  - item: {fileID: 11400000, guid: 5ac0a3ecdada491498442c448820cef0, type: 2}
+    quantity: 5
+  - item: {fileID: 11400000, guid: da96023b999abf944a02cb2053b38cf4, type: 2}
+    quantity: 5
+  - item: {fileID: 11400000, guid: 0f75b9df14c1ee940a6fae1c3c4f4392, type: 2}
+    quantity: 1
+  - item: {fileID: 11400000, guid: 68a89b1d4a07653419d0ff4f862b7756, type: 2}
+    quantity: 4
 --- !u!1 &5625967765350527155
 GameObject:
   m_ObjectHideFlags: 0

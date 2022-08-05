@@ -130,42 +130,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1319038591967438586, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: rewardItemsTest.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1319038591967438586, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: rewardItemsTest.Array.data[0].item
-      value: 
-      objectReference: {fileID: 11400000, guid: 5ac0a3ecdada491498442c448820cef0, type: 2}
-    - target: {fileID: 1319038591967438586, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: rewardItemsTest.Array.data[1].item
-      value: 
-      objectReference: {fileID: 11400000, guid: da96023b999abf944a02cb2053b38cf4, type: 2}
-    - target: {fileID: 1319038591967438586, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: rewardItemsTest.Array.data[2].item
-      value: 
-      objectReference: {fileID: 11400000, guid: 0f75b9df14c1ee940a6fae1c3c4f4392, type: 2}
-    - target: {fileID: 1319038591967438586, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: rewardItemsTest.Array.data[3].item
-      value: 
-      objectReference: {fileID: 11400000, guid: 68a89b1d4a07653419d0ff4f862b7756, type: 2}
-    - target: {fileID: 1319038591967438586, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: rewardItemsTest.Array.data[0].quantity
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1319038591967438586, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: rewardItemsTest.Array.data[1].quantity
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1319038591967438586, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: rewardItemsTest.Array.data[2].quantity
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1319038591967438586, guid: 58350c5257b653148a4e3e587747e426, type: 3}
-      propertyPath: rewardItemsTest.Array.data[3].quantity
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 5625967765118759031, guid: 58350c5257b653148a4e3e587747e426, type: 3}
       propertyPath: m_Pivot.x
       value: 0
