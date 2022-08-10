@@ -130,6 +130,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1806324597, guid: 58350c5257b653148a4e3e587747e426, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5625967765118759031, guid: 58350c5257b653148a4e3e587747e426, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -764,6 +768,122 @@ CompositeCollider2D:
       - {x: -16.93749, y: -11.8125}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
+--- !u!1 &1193438446
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1193438448}
+  - component: {fileID: 1193438447}
+  - component: {fileID: 1193438449}
+  m_Layer: 0
+  m_Name: BattleZone
+  m_TagString: Untagged
+  m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!61 &1193438447
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193438446}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 10.55109, y: 2.963594}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 59.990196, y: 16.606945}
+  m_EdgeRadius: 0
+--- !u!4 &1193438448
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193438446}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1193438449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193438446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1c4fba11f9a2214ea614890a2755d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  potentialBattles:
+  - expToAward: 300
+    enemies:
+    - skell
+    - eye
+    rewardItemsWithQuantity:
+    - item: {fileID: 11400000, guid: f4c64f0500478a44aba08282c53a5ee0, type: 2}
+      quantity: 1
+    - item: {fileID: 11400000, guid: da96023b999abf944a02cb2053b38cf4, type: 2}
+      quantity: 6
+  - expToAward: 550
+    enemies:
+    - spider
+    - eye
+    rewardItemsWithQuantity:
+    - item: {fileID: 11400000, guid: 68a89b1d4a07653419d0ff4f862b7756, type: 2}
+      quantity: 5
+    - item: {fileID: 11400000, guid: f4c64f0500478a44aba08282c53a5ee0, type: 2}
+      quantity: 1
+    - item: {fileID: 11400000, guid: 74021f6c03eeec046acd9192c95f41e4, type: 2}
+      quantity: 2
+  - expToAward: 600
+    enemies:
+    - skell
+    - skell
+    - eye
+    - eye
+    rewardItemsWithQuantity:
+    - item: {fileID: 11400000, guid: 0f75b9df14c1ee940a6fae1c3c4f4392, type: 2}
+      quantity: 1
+    - item: {fileID: 11400000, guid: 74021f6c03eeec046acd9192c95f41e4, type: 2}
+      quantity: 2
+  - expToAward: 600
+    enemies:
+    - skell
+    - skell
+    - spider
+    - spider
+    - eye
+    - eye
+    rewardItemsWithQuantity:
+    - item: {fileID: 11400000, guid: 0f75b9df14c1ee940a6fae1c3c4f4392, type: 2}
+      quantity: 1
+    - item: {fileID: 11400000, guid: 74021f6c03eeec046acd9192c95f41e4, type: 2}
+      quantity: 2
 --- !u!1001 &1868400113
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -77,6 +77,7 @@ public class BattleManager : MonoBehaviour
     MainCameraController cam;
     Vector3 cameraPos;
 
+    bool endBattleCRCalledOnce;
     int currentTurn;
     bool waitingForNextTurn;
     bool fleeing;
@@ -126,12 +127,7 @@ public class BattleManager : MonoBehaviour
             if (waitingForNextTurn)
             {
                 if (activeBattleCharacters[currentTurn].CharacterType == BattleCharacter.BattleCharacterType.player)
-                {
                     actionsMenu.SetActive(true);
-
-                    //if (Input.GetKeyDown(key: KeyCode.V))
-                    //    PlayerAttack("flame", 3);
-                }
 
                 else
                 {
@@ -196,7 +192,12 @@ public class BattleManager : MonoBehaviour
                         for (int j = 0; j < enemyPrefabs.Count; j++)
                         {
                             if (enemyPrefabs[j].CharacterName.Trim().ToLower().Contains(enemiesToSpawn[i]))
-                                activeBattleCharacters.Add(Instantiate(enemyPrefabs[i], enemyPositions[i].position, enemyPositions[i].rotation, enemyPositions[i]));
+                            {
+                                if(i < enemyPositions.Count)
+                                    activeBattleCharacters.Add(Instantiate(enemyPrefabs[j], enemyPositions[i].position, enemyPositions[i].rotation, enemyPositions[i]));
+
+                                break;
+                            }
                         }
                     }
                 }
@@ -219,6 +220,7 @@ public class BattleManager : MonoBehaviour
         {
             fleeing = true;
             battleNotif.Activate("YOU ESCAPED!");
+            Debug.Log("end battle called");
             StartCoroutine(EndBattleCR());
         }
 
@@ -235,18 +237,21 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     void StartNextTurn()
     {
-        currentTurn++;
+        if (activeBattleCharacters.Count > 0)
+        {
+            currentTurn++;
 
-        if (currentTurn >= activeBattleCharacters.Count)
-            currentTurn = 0;
+            if (currentTurn >= activeBattleCharacters.Count)
+                currentTurn = 0;
 
-        waitingForNextTurn = true;
+            waitingForNextTurn = true;
 
-        UpdateBattle();
-        UpdateUIStats();
-        targetAttackMenu.SetActive(false);
-        attackButton.interactable = true;
-        SetCurrentTurnText(activeBattleCharacters[currentTurn].CharacterName);
+            UpdateBattle();
+            UpdateUIStats();
+            targetAttackMenu.SetActive(false);
+            attackButton.interactable = true;
+            SetCurrentTurnText(activeBattleCharacters[currentTurn].CharacterName); 
+        }
     }
 
     /// <summary>
@@ -285,13 +290,20 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        if (allEnemiesDead || allPlayersDead)
+        if (activeBattleCharacters.Count >0)
         {
-            if (allEnemiesDead)
-                StartCoroutine(EndBattleCR());
 
-            else
-                StartCoroutine(GameOverCR());
+            if (allEnemiesDead || allPlayersDead)
+            {
+                if (allEnemiesDead)
+                {
+                    Debug.Log("end battle called");
+                    StartCoroutine(EndBattleCR());
+                }
+
+                else
+                    StartCoroutine(GameOverCR());
+            } 
         }
 
         else
@@ -396,64 +408,70 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     void EnemyAttack()
     {
-        // locking on to target:
-        List<int> playerIndices = new List<int>(); // an indices list to get the indices of all players in the activeBattleCharacters list
-
-        activeBattleCharacters.ForEach(ab =>
+        if (activeBattleCharacters.Count > 0)
         {
-            // loop through the activeBattleCharacters list and adding the index of every character who's a player
-            // in the playerIndices list:
-            if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
+            if (activeBattleCharacters[currentTurn].CurrentHP > 0)
             {
-                if(ab.CurrentHP > 0)
-                    playerIndices.Add(activeBattleCharacters.IndexOf(ab));
-            }
-        });
+                // locking on to target:
+                List<int> playerIndices = new List<int>(); // an indices list to get the indices of all players in the activeBattleCharacters list
 
-        // now that we have the player indices, we select a reandom one and take away x amount of HP from them:
-        int targetIndex = playerIndices[Random.Range(0, playerIndices.Count)];
-
-        // choose a random attack (string -- name of attack) from the activeBC's movesAvailable list:
-        int attackIndex = Random.Range(0, activeBattleCharacters[currentTurn].MovesAvailable.Length);
-
-        // cache:
-        BattleMove selectedMove = null;
-
-        // loop through the moveList and check if an attack of the same name exists in there
-        if (activeBattleCharacters[currentTurn].MovesAvailable.Length > 0)
-        {
-            for (int i = 0; i < moveList.Count; i++)
-            {
-                // if it does, cache it in the selectedAttack var:
-                if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[attackIndex].Trim()))
+                activeBattleCharacters.ForEach(ab =>
                 {
-                    selectedMove = moveList[i];
-                    break;
+                // loop through the activeBattleCharacters list and adding the index of every character who's a player
+                // in the playerIndices list:
+                if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
+                    {
+                        if (ab.CurrentHP > 0)
+                            playerIndices.Add(activeBattleCharacters.IndexOf(ab));
+                    }
+                });
+
+                // now that we have the player indices, we select a reandom one and take away x amount of HP from them:
+                int targetIndex = playerIndices[Random.Range(0, playerIndices.Count)];
+
+                // choose a random attack (string -- name of attack) from the activeBC's movesAvailable list:
+                int attackIndex = Random.Range(0, activeBattleCharacters[currentTurn].MovesAvailable.Length);
+
+                // cache:
+                BattleMove selectedMove = null;
+
+                // loop through the moveList and check if an attack of the same name exists in there
+                if (activeBattleCharacters[currentTurn].MovesAvailable.Length > 0)
+                {
+                    for (int i = 0; i < moveList.Count; i++)
+                    {
+                        // if it does, cache it in the selectedAttack var:
+                        if (moveList[i].MoveName.ToLower().Contains(activeBattleCharacters[currentTurn].MovesAvailable[attackIndex].Trim()))
+                        {
+                            selectedMove = moveList[i];
+                            break;
+                        }
+                    }
                 }
-            }
-        }
 
-        else
-            Debug.LogError("NO MOVES AVAILABLE FOR: " + activeBattleCharacters[currentTurn].CharacterName);
+                else
+                    Debug.LogError("NO MOVES AVAILABLE FOR: " + activeBattleCharacters[currentTurn].CharacterName);
 
-        //Debug.LogError(selectedMove);
-        if (selectedMove != null)
-        {
-            // inflict status effects from that selectedAttack:
-            activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
-            activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
-            Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
+                //Debug.LogError(selectedMove);
+                if (selectedMove != null)
+                {
+                    // inflict status effects from that selectedAttack:
+                    activeBattleCharacters[targetIndex].CurrentHP -= DealDamage(targetIndex, selectedMove.MoveDamage); // apply damage to targeted player
+                    activeBattleCharacters[currentTurn].CurrentMP -= selectedMove.MoveCost; // apply MP cost to the enemy itself
+                    Instantiate(selectedMove.AttackFX, activeBattleCharacters[targetIndex].transform.position + new Vector3(0, .7f, 0), Quaternion.identity); // instantiate attack FX on targeted player 
 
-            string msg = activeBattleCharacters[currentTurn].CharacterName
-                         + " used "
-                         + selectedMove.MoveName
-                         + " on "
-                         + activeBattleCharacters[targetIndex].CharacterName
-                         + ".";
+                    string msg = activeBattleCharacters[currentTurn].CharacterName
+                                 + " used "
+                                 + selectedMove.MoveName
+                                 + " on "
+                                 + activeBattleCharacters[targetIndex].CharacterName
+                                 + ".";
 
-            Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
-            UpdateUIStats();
-            StartCoroutine(ShowAttackTextCR(text: enemyAttackText, _msg: msg, activeTime: 2));
+                    Instantiate(FX[0], activeBattleCharacters[currentTurn].transform.position, Quaternion.identity);
+                    UpdateUIStats();
+                    StartCoroutine(ShowAttackTextCR(text: enemyAttackText, _msg: msg, activeTime: 2));
+                }
+            } 
         }
     }
 
@@ -492,13 +510,16 @@ public class BattleManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator EnemyAttackDelayCR()
     {
-        waitingForNextTurn = false;
-        yield return new WaitForSeconds(1);
-        EnemyAttack();
-        yield return new WaitForSeconds(2);
-        StartNextTurn();
+        if (activeBattleCharacters.Count > 0)
+        {
+            waitingForNextTurn = false;
+            yield return new WaitForSeconds(1);
+            EnemyAttack();
+            yield return new WaitForSeconds(2);
+            StartNextTurn();
 
-        yield break;
+            yield break; 
+        }
     }
 
     /// <summary>
@@ -508,40 +529,45 @@ public class BattleManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator EndBattleCR()
     {
-        yield return new WaitForSeconds(1);
-
-        ToggleAllBattleUI(false); // UI will be disabled after 1 second
-
-        yield return new WaitForSeconds(1f); // screen will fade to black, one second after that
-
-        UIController.instance.FadeToBlack();
-
-        yield return new WaitForSeconds(1.5f); // all characters will be destroyed, 1.5 seconds after that
-
-        // update all corresponding player stats on the GameManager for every player char.:
-        activeBattleCharacters.ForEach(ab =>
+        if (!endBattleCRCalledOnce)
         {
-            if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
-                UpdateCorrespondingPlayerStats(ab);
-        });
+            endBattleCRCalledOnce = true;
 
-        battleScene.SetActive(false);
-        DestroyAllBattleCharacters();
-        currentTurn = 0;
+            yield return new WaitForSeconds(1);
 
-        if (fleeing)
-        {
-            GameManager.instance.battleActive = false;
-            fleeing = false;
+            ToggleAllBattleUI(false); // UI will be disabled after 1 second
+
+            yield return new WaitForSeconds(1f); // screen will fade to black, one second after that
+
+            UIController.instance.FadeToBlack();
+
+            yield return new WaitForSeconds(1.5f); // all characters will be destroyed, 1.5 seconds after that
+
+            // update all corresponding player stats on the GameManager for every player char.:
+            activeBattleCharacters.ForEach(ab =>
+            {
+                if (ab.CharacterType == BattleCharacter.BattleCharacterType.player)
+                    UpdateCorrespondingPlayerStats(ab);
+            });
+
+            battleScene.SetActive(false);
+            DestroyAllBattleCharacters();
+            currentTurn = 0;
+
+            if (fleeing)
+            {
+                GameManager.instance.battleActive = false;
+                fleeing = false;
+            }
+
+            else
+                BattleRewardManager.instance.OpenRewardsScreen(_EXPEarned: expToReward_BM, _rewardItems: battleRewards_BM);
+
+            UIController.instance.FadeFromBlack();
+            AudioManager.instance.PlayMusic(FindObjectOfType<MainCameraController>().MusicIndex); // revert to playing scene music
+
+            yield break; 
         }
-
-        else
-            BattleRewardManager.instance.OpenRewardsScreen(_EXPEarned: expToReward_BM, _rewardItems: battleRewards_BM);
-
-        UIController.instance.FadeFromBlack();
-        AudioManager.instance.PlayMusic(FindObjectOfType<MainCameraController>().MusicIndex); // revert to playing scene music
-
-        yield break;
     }
 
     /// <summary>
