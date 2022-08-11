@@ -10,6 +10,8 @@ public class BattleManager : MonoBehaviour
     #region Var./Ref.
     public static BattleManager instance;
 
+    [HideInInspector] public bool bossBattle;
+
     [SerializeField] int gameOverSceneIndex;
     [SerializeField] int fleeChance;
 
@@ -116,11 +118,11 @@ public class BattleManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-            BattleStart(new List<string> { "skell", "spider", "eyeball" });
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //    BattleStart(new List<string> { "skell", "spider", "eyeball" }, false);
 
-        if (Input.GetKeyDown(KeyCode.N))
-            StartNextTurn();
+        //if (Input.GetKeyDown(KeyCode.N))
+        //    StartNextTurn();
 
         if (GameManager.instance.battleActive)
         {
@@ -144,67 +146,66 @@ public class BattleManager : MonoBehaviour
     /// start battle at any point in the game:
     /// </summary>
     /// <param name="enemiesToSpawn"></param>
-    public void BattleStart(List<string> enemiesToSpawn)
+    public void BattleStart(List<string> enemiesToSpawn, bool isBoss)
     {
-        if (!GameManager.instance.battleActive)
+        endBattleCRCalledOnce = false;
+        cam = FindObjectOfType<MainCameraController>();
+        
+        if (cam != null)
         {
-            cam = FindObjectOfType<MainCameraController>();
-
-            if (cam != null)
+            // set bools and ints:
+            GameManager.instance.battleActive = true;
+            bossBattle = isBoss;
+            waitingForNextTurn = true;
+            currentTurn = 0;
+        
+            // position the battle scene at wherever the camera is:
+            cameraPos = new Vector3(cam.transform.localPosition.x, cam.transform.localPosition.y, battleScene.transform.localPosition.z);
+            battleScene.transform.localPosition = cameraPos;
+            battleScene.SetActive(true);
+            ToggleAllBattleUI(state: true);
+            AudioManager.instance.PlayMusic(0); // play battle music
+        
+            // spawning players at the correct positions in battle:
+            for (int i = 0; i < playerPositions.Count; i++)
             {
-                // set bools and ints:
-                GameManager.instance.battleActive = true;
-                waitingForNextTurn = true;
-                currentTurn = 0;
-
-                // position the battle scene at wherever the camera is:
-                cameraPos = new Vector3(cam.transform.localPosition.x, cam.transform.localPosition.y, battleScene.transform.localPosition.z);
-                battleScene.transform.localPosition = cameraPos;
-                battleScene.SetActive(true);
-                ToggleAllBattleUI(true);
-                AudioManager.instance.PlayMusic(0); // play battle music
-
-                // spawning players at the correct positions in battle:
-                for (int i = 0; i < playerPositions.Count; i++)
+                if (GameManager.instance.PlayerStatsList[i].gameObject.activeInHierarchy)
                 {
-                    if (GameManager.instance.PlayerStatsList[i].gameObject.activeInHierarchy)
+                    for (int j = 0; j < playerPrefabs.Count; j++)
                     {
-                        for (int j = 0; j < playerPrefabs.Count; j++)
+                        if (playerPrefabs[j].CharacterName == GameManager.instance.PlayerStatsList[i].characterName)
                         {
-                            if (playerPrefabs[j].CharacterName == GameManager.instance.PlayerStatsList[i].characterName)
-                            {
-                                BattleCharacter newPlayer = Instantiate(playerPrefabs[i], playerPositions[i].position, playerPositions[i].rotation, playerPositions[i]);
-
-                                PlayerStats stats = GameManager.instance.PlayerStatsList[i];
-                                newPlayer.SetUpBattleCharacter(_stats: stats);
-
-                                activeBattleCharacters.Add(newPlayer);
-                            }
+                            BattleCharacter newPlayer = Instantiate(playerPrefabs[i], playerPositions[i].position, playerPositions[i].rotation, playerPositions[i]);
+        
+                            PlayerStats stats = GameManager.instance.PlayerStatsList[i];
+                            newPlayer.SetUpBattleCharacter(_stats: stats);
+        
+                            activeBattleCharacters.Add(newPlayer);
                         }
                     }
                 }
-
-                // spawning enemies at the correct positions in battle:
-                for (int i = 0; i < enemiesToSpawn.Count; i++)
-                {
-                    if (!string.IsNullOrEmpty(enemiesToSpawn[i]))
-                    {
-                        for (int j = 0; j < enemyPrefabs.Count; j++)
-                        {
-                            if (enemyPrefabs[j].CharacterName.Trim().ToLower().Contains(enemiesToSpawn[i]))
-                            {
-                                if(i < enemyPositions.Count)
-                                    activeBattleCharacters.Add(Instantiate(enemyPrefabs[j], enemyPositions[i].position, enemyPositions[i].rotation, enemyPositions[i]));
-
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                UpdateUIStats();
-                SetCurrentTurnText(activeBattleCharacters[currentTurn].CharacterName); // show whose turn it is currently on UI 
             }
+        
+            // spawning enemies at the correct positions in battle:
+            for (int i = 0; i < enemiesToSpawn.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(enemiesToSpawn[i]))
+                {
+                    for (int j = 0; j < enemyPrefabs.Count; j++)
+                    {
+                        if (enemyPrefabs[j].CharacterName.Trim().ToLower().Contains(enemiesToSpawn[i]))
+                        {
+                            if(i < enemyPositions.Count)
+                                activeBattleCharacters.Add(Instantiate(enemyPrefabs[j], enemyPositions[i].position, enemyPositions[i].rotation, enemyPositions[i]));
+        
+                            break;
+                        }
+                    }
+                }
+            }
+        
+            UpdateUIStats();
+            SetCurrentTurnText(activeBattleCharacters[currentTurn].CharacterName); // show whose turn it is currently on UI 
         }
     }
 
@@ -216,18 +217,23 @@ public class BattleManager : MonoBehaviour
     {
         int rand = Random.Range(0, 101);
 
-        if (rand < fleeChance)
-        {
-            fleeing = true;
-            battleNotif.Activate("YOU ESCAPED!");
-            Debug.Log("end battle called");
-            StartCoroutine(EndBattleCR());
-        }
+        if (bossBattle)
+            battleNotif.Activate("CANNOT FLEE THIS BATTLE!");
 
         else
         {
-            StartNextTurn();
-            battleNotif.Activate("COULDN'T ESCAPE!");
+            if (rand < fleeChance)
+            {
+                fleeing = true;
+                battleNotif.Activate("YOU ESCAPED!");
+                StartCoroutine(EndBattleCR());
+            }
+
+            else
+            {
+                StartNextTurn();
+                battleNotif.Activate("COULDN'T ESCAPE!");
+            }
         }
     }
 
@@ -296,10 +302,7 @@ public class BattleManager : MonoBehaviour
             if (allEnemiesDead || allPlayersDead)
             {
                 if (allEnemiesDead)
-                {
-                    Debug.Log("end battle called");
                     StartCoroutine(EndBattleCR());
-                }
 
                 else
                     StartCoroutine(GameOverCR());
@@ -531,11 +534,14 @@ public class BattleManager : MonoBehaviour
     {
         if (!endBattleCRCalledOnce)
         {
+            // this bool has been added to the script because of a bug that was causing the end battle CR to be called
+            // twice at the end of a battle (once from the PlayerAttackCR and the other from EnemyAttack). It'll make sure
+            // that the EndBattleCR is only called once at the end of a battle:
             endBattleCRCalledOnce = true;
 
             yield return new WaitForSeconds(1);
 
-            ToggleAllBattleUI(false); // UI will be disabled after 1 second
+            ToggleAllBattleUI(state: false); // UI will be disabled after 1 second
 
             yield return new WaitForSeconds(1f); // screen will fade to black, one second after that
 

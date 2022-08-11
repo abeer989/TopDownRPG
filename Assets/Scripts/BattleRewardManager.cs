@@ -17,6 +17,7 @@ public class BattleRewardManager : MonoBehaviour
 
     BattleRewardWithQuantity[] rewardItems;
     int EXPEarned;
+    string questToMark_BRM;
 
     private void Awake()
     {
@@ -75,5 +76,14 @@ public class BattleRewardManager : MonoBehaviour
 
         UIController.instance.UpdateInfoHolderStats(); // to update the UI to reflect newly gained EXP
         rewardPanel.SetActive(false);
+
+        PlayerController.instance.CanMove = true;
+
+        if (!string.IsNullOrEmpty(questToMark_BRM))
+            QuestManager.instance.MarkQuestComplete(questToMark: questToMark_BRM);
+
+        questToMark_BRM = string.Empty;
     }
+
+    public void SetQuestToMark_BRM(string qtm) => questToMark_BRM = qtm;
 }
