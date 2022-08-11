@@ -65,6 +65,8 @@ public class PlayerStats : MonoBehaviour
                 currentEXP -= EXPLevelThresholds[characterLevel];
                 characterLevel++;
 
+                // add a level up animation
+
                 // adding to str and def stats as the player level goes up, depending upon
                 // the level being an even/odd number:
                 if (characterLevel % 2 == 0)
