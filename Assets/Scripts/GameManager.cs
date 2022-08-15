@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] List<ItemScriptable> itemsHeldDetails;
     [SerializeField] List<int> quantitiesOfItemsHeld;
 
-    [Header("Reference Scriptables")]
+    [Space]
     [SerializeField] List<ItemScriptable> referenceScriptables;
 
     public int Gold
@@ -75,14 +75,14 @@ public class GameManager : MonoBehaviour
         else
             PlayerController.instance.CanMove = true;
 
-        if (Input.GetKeyDown(KeyCode.Q))
-            SavePlayerData();
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //    SavePlayerData();
 
-        if (Input.GetKeyDown(KeyCode.L))
-            LoadPlayerData();
+        //if (Input.GetKeyDown(KeyCode.L))
+        //    LoadPlayerData();
 
-        if (Input.GetKeyDown(KeyCode.C))
-            ClearInventoryCompletely();
+        //if (Input.GetKeyDown(KeyCode.C))
+        //    ClearInventoryCompletely();
     }
     #endregion
 
@@ -293,7 +293,8 @@ public class GameManager : MonoBehaviour
 
         while (itemsHeldDetails.Count > 0 && whileBreaker < 100)
         {
-            DiscardItemFromInventory(itemToDeleteDetails: itemsHeldDetails[0], quantitityToDelete: quantitiesOfItemsHeld[0], dropItem: false);
+            DiscardItemFromInventory(itemToDeleteDetails: itemsHeldDetails[0],
+                                     quantitityToDelete: quantitiesOfItemsHeld[0], dropItem: false);
             whileBreaker++;
         }
     }
